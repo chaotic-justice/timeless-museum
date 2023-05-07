@@ -3,8 +3,9 @@ import Router, { useRouter } from "next/router"
 import gql from "graphql-tag"
 import { useMutation } from "@apollo/client"
 import client from "../../lib/apollo-client"
-import { PostProps } from "../../components/Post"
-import { GetServerSideProps } from "next"
+import { GetServerSideProps, InferGetServerSidePropsType } from "next"
+import { graphql } from "../../lib/gql"
+import { PostQueryQuery } from "../../lib/gql/graphql"
 
 const PublishMutation = gql`
   mutation PublishMutation($id: ID!) {
@@ -36,18 +37,26 @@ const DeleteMutation = gql`
   }
 `
 
-const Post: React.FC<{ data: { post: PostProps } }> = (props) => {
-  const id = useRouter().query.id
+const Post = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  const {
+    query: { id },
+  } = useRouter()
 
   const [publish] = useMutation(PublishMutation)
   const [deletePost] = useMutation(DeleteMutation)
+
+  if (!props.data.post) return
 
   let title = props.data.post.title
   if (!props.data.post.published) {
     title = `${title} (Draft)`
   }
 
-  const authorName = props.data.post.author ? props.data.post.author.name : "Unknown author"
+  const authorName = props.data.post.author
+    ? props.data.post.author.name
+    : "Unknown author"
   return (
     <Layout>
       <div>
@@ -106,10 +115,16 @@ const Post: React.FC<{ data: { post: PostProps } }> = (props) => {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const id = Number(Array.isArray(context.params?.id) ? context.params?.id[0] : context.params?.id)
+export const getServerSideProps: GetServerSideProps<{
+  data: PostQueryQuery
+}> = async context => {
+  const id = String(
+    Array.isArray(context.params?.id)
+      ? context.params?.id[0]
+      : context.params?.id
+  )
   const { data } = await client.query({
-    query: gql`
+    query: graphql(`
       query PostQuery($id: ID!) {
         post(id: $id) {
           id
@@ -122,15 +137,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           }
         }
       }
-    `,
+    `),
     variables: { id },
-  });
+  })
 
   return {
     props: {
-      data
+      data,
     },
-  };
+  }
 }
 
 export default Post

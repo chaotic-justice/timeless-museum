@@ -3,8 +3,9 @@ import Layout from "../components/Layout"
 import Router from "next/router"
 import gql from "graphql-tag"
 import { useMutation } from "@apollo/client"
+import { graphql } from "../lib/gql"
 
-const CreateDraftMutation = gql`
+const gqlMutation = `
   mutation CreateDraftMutation(
     $title: String!
     $content: String
@@ -22,6 +23,25 @@ const CreateDraftMutation = gql`
     }
   }
 `
+
+// const CreateDraftMutation = graphql(`
+//   mutation CreateDraftMutation(
+//     $title: String!
+//     $content: String
+//     $authorEmail: String!
+//   ) {
+//     createDraft(title: $title, content: $content, authorEmail: $authorEmail) {
+//       id
+//       title
+//       content
+//       published
+//       author {
+//         id
+//         name
+//       }
+//     }
+//   }
+// `)
 
 function Draft() {
   const [title, setTitle] = useState("")

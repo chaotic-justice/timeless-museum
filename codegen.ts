@@ -1,20 +1,17 @@
-import { CodegenConfig } from "@graphql-codegen/cli"
+import type { CodegenConfig } from "@graphql-codegen/cli"
 
 const config: CodegenConfig = {
+  overwrite: true,
   schema: "./generated/schema.graphql",
-  documents: ["src/**/*.tsx"],
+  documents: ["pages/**/*.tsx", "pages/*.tsx", "components/*.tsx"],
   ignoreNoDocuments: true,
   generates: {
-    "./src/gql/": {
+    "lib/gql/": {
       preset: "client",
+      plugins: [],
     },
   },
-  config: {
-    scalars: {
-      UUID: "string",
-      DateTime: "Date",
-    },
-  },
+  hooks: { afterAllFileWrite: ["prettier --write"] },
 }
 
 export default config

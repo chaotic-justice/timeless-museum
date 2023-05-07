@@ -182,7 +182,6 @@ builder.mutationField("createDraft", t =>
 
 const schema = builder.toSchema()
 const schemaAsString = printSchema(lexicographicSortSchema(schema))
-console.log("schemaAsString", schemaAsString)
 
 writeFileSync(path.resolve("./generated/schema.graphql"), schemaAsString)
 

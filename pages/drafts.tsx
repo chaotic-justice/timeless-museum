@@ -1,10 +1,21 @@
+import { useQuery } from "@tanstack/react-query"
+import request from "graphql-request"
+import { InferGetServerSidePropsType } from "next"
 import Layout from "../components/Layout"
-import gql from "graphql-tag"
-import client from "../lib/apollo-client"
-import Post, { PostProps } from "../components/Post"
+import Post from "../components/Post"
+import { graphql } from "../lib/gql"
 
+const draftsQueryDocument = graphql(`
+  query DraftsQuery {
+    drafts {
+      id
+      ...PostItem
+    }
+  }
+`)
 
-const Drafts: React.FC<{ data: { drafts: PostProps[] } }> = (props) => {
+const Drafts = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  if (!props.data) return
   return (
     <Layout>
       <div className="page">
@@ -36,28 +47,13 @@ const Drafts: React.FC<{ data: { drafts: PostProps[] } }> = (props) => {
 }
 
 export const getServerSideProps = async () => {
-  const { data } = await client.query({
-    query: gql`
-      query DraftsQuery {
-        drafts {
-          id
-          title
-          content
-          published
-          author {
-            id
-            name
-          }
-        }
-      }
-    `,
-  });
+  const { data } = useQuery(["drafts"], async () => request("localhost:3000/api/graphql", draftsQueryDocument))
 
   return {
     props: {
-      data
+      data,
     },
-  };
+  }
 }
 
 export default Drafts
