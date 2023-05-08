@@ -94,7 +94,7 @@ export type DraftsQueryQueryVariables = Exact<{ [key: string]: never }>;
 export type DraftsQueryQuery = {
   __typename?: "Query";
   drafts: Array<
-    { __typename?: "Post"; id: string } & {
+    { __typename?: "Post" } & {
       " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
     }
   >;
@@ -225,7 +225,6 @@ export const DraftsQueryDocument = {
             selectionSet: {
               kind: "SelectionSet",
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
                 {
                   kind: "FragmentSpread",
                   name: { kind: "Name", value: "PostItem" },

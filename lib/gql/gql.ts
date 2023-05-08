@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
 const documents = {
   "\n  fragment PostItem on Post {\n    id\n    title\n    content\n    published\n    author {\n      name\n    }\n  }\n":
     types.PostItemFragmentDoc,
-  "\n  query DraftsQuery {\n    drafts {\n      id\n      ...PostItem\n    }\n  }\n":
+  "\n  query DraftsQuery {\n    drafts {\n      ...PostItem\n    }\n  }\n":
     types.DraftsQueryDocument,
   "\n      query FeedQuery {\n        feed {\n          id\n          title\n          content\n          published\n          author {\n            id\n            name\n          }\n        }\n      }\n    ":
     types.FeedQueryDocument,
@@ -53,8 +53,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query DraftsQuery {\n    drafts {\n      id\n      ...PostItem\n    }\n  }\n"
-): (typeof documents)["\n  query DraftsQuery {\n    drafts {\n      id\n      ...PostItem\n    }\n  }\n"];
+  source: "\n  query DraftsQuery {\n    drafts {\n      ...PostItem\n    }\n  }\n"
+): (typeof documents)["\n  query DraftsQuery {\n    drafts {\n      ...PostItem\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

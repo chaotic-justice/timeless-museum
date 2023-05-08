@@ -3,7 +3,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools/build/lib/devtools"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import type { AppProps } from "next/app"
 import { useState } from "react"
 

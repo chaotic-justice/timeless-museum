@@ -25,7 +25,7 @@ builder.queryType({})
 builder.mutationType({})
 
 builder.prismaObject("User", {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeID("id"),
     email: t.exposeString("email"),
     name: t.exposeString("name", { nullable: true }),
@@ -34,7 +34,7 @@ builder.prismaObject("User", {
 })
 
 builder.prismaObject("Post", {
-  fields: t => ({
+  fields: (t) => ({
     id: t.exposeID("id"),
     title: t.exposeString("title"),
     content: t.exposeString("content", { nullable: true }),
@@ -43,7 +43,7 @@ builder.prismaObject("Post", {
   }),
 })
 
-builder.queryField("feed", t =>
+builder.queryField("feed", (t) =>
   t.prismaField({
     type: ["Post"],
     resolve: async (query, _parent, _args, _info) =>
@@ -54,7 +54,7 @@ builder.queryField("feed", t =>
   })
 )
 
-builder.queryField("post", t =>
+builder.queryField("post", (t) =>
   t.prismaField({
     type: "Post",
     args: {
@@ -71,7 +71,7 @@ builder.queryField("post", t =>
   })
 )
 
-builder.queryField("drafts", t =>
+builder.queryField("drafts", (t) =>
   t.prismaField({
     type: ["Post"],
     resolve: async (query, _parent, _args, _info) =>
@@ -82,7 +82,7 @@ builder.queryField("drafts", t =>
   })
 )
 
-builder.queryField("filterPosts", t =>
+builder.queryField("filterPosts", (t) =>
   t.prismaField({
     type: ["Post"],
     args: {
@@ -91,10 +91,7 @@ builder.queryField("filterPosts", t =>
     resolve: async (query, _parent, args, _info) => {
       const or = args.searchString
         ? {
-            OR: [
-              { title: { contains: args.searchString } },
-              { content: { contains: args.searchString } },
-            ],
+            OR: [{ title: { contains: args.searchString } }, { content: { contains: args.searchString } }],
           }
         : {}
       return prisma.post.findMany({
@@ -105,7 +102,7 @@ builder.queryField("filterPosts", t =>
   })
 )
 
-builder.mutationField("signupUser", t =>
+builder.mutationField("signupUser", (t) =>
   t.prismaField({
     type: "User",
     args: {
@@ -123,7 +120,7 @@ builder.mutationField("signupUser", t =>
   })
 )
 
-builder.mutationField("deletePost", t =>
+builder.mutationField("deletePost", (t) =>
   t.prismaField({
     type: "Post",
     args: {
@@ -139,7 +136,7 @@ builder.mutationField("deletePost", t =>
   })
 )
 
-builder.mutationField("publish", t =>
+builder.mutationField("publish", (t) =>
   t.prismaField({
     type: "Post",
     args: {
@@ -158,7 +155,7 @@ builder.mutationField("publish", t =>
   })
 )
 
-builder.mutationField("createDraft", t =>
+builder.mutationField("createDraft", (t) =>
   t.prismaField({
     type: "Post",
     args: {
@@ -189,6 +186,15 @@ export default createYoga<{
   req: NextApiRequest
   res: NextApiResponse
 }>({
+  cors: (request) => {
+    const requestOrigin = request.headers.get("origin") || "http://localhost:3000"
+    return {
+      origin: requestOrigin,
+      credentials: true,
+      allowedHeaders: ["Content-Type, x-requested-with"],
+      methods: ["POST"],
+    }
+  },
   schema,
   graphqlEndpoint: "/api/graphql",
 })

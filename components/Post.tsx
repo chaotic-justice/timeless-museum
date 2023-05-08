@@ -1,8 +1,9 @@
 import Router from "next/router"
 import ReactMarkdown from "react-markdown"
 import { FragmentType, graphql, useFragment } from "../lib/gql"
+import { PostItemFragment } from "../lib/gql/graphql"
 
-const PostFragment = graphql(`
+export const PostFragment = graphql(`
   fragment PostItem on Post {
     id
     title
@@ -14,8 +15,8 @@ const PostFragment = graphql(`
   }
 `)
 
-const Post = (props: { post: FragmentType<typeof PostFragment> }) => {
-  const post = useFragment(PostFragment, props.post)
+const Post = (props: { post: PostItemFragment }) => {
+  const post = props.post
   const authorName = post.author ? post.author.name : "Unknown author"
   return (
     <div onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}>
