@@ -3,12 +3,21 @@ import type { CodegenConfig } from "@graphql-codegen/cli"
 const config: CodegenConfig = {
   overwrite: true,
   schema: "./generated/schema.graphql",
-  documents: ["pages/**/*.tsx", "pages/*.tsx", "components/*.tsx"],
+  documents: ["pages/**/*.tsx", "pages/*.tsx", "components/*.tsx", "lib/documents/*.ts"],
   ignoreNoDocuments: true,
   generates: {
     "lib/gql/": {
       preset: "client",
       plugins: [],
+    },
+  },
+  config: {
+    scalars: {
+      ID: "string",
+      String: "string",
+      Boolean: "boolean",
+      Int: "number",
+      Float: "number",
     },
   },
   hooks: { afterAllFileWrite: ["prettier --write"] },

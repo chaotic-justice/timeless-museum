@@ -1,76 +1,83 @@
-import Layout from "../../components/Layout"
+import { QueryClient, dehydrate, useMutation, useQuery } from "@tanstack/react-query"
+import request from "graphql-request"
+import { GetStaticPaths, GetStaticProps } from "next"
 import Router, { useRouter } from "next/router"
-import gql from "graphql-tag"
-import { useMutation } from "@apollo/client"
-import client from "../../lib/apollo-client"
-import { GetServerSideProps, InferGetServerSidePropsType } from "next"
-import { graphql } from "../../lib/gql"
-import { PostQueryQuery } from "../../lib/gql/graphql"
+import Layout from "../../components/Layout"
+import { PostFragment } from "../../components/Post"
+import { getPostDocument, publishDocument } from "../../lib/documents"
+import { useFragment } from "../../lib/gql"
+import { PostItemFragment } from "../../lib/gql/graphql"
+import prisma from "../../lib/prisma"
 
-const PublishMutation = gql`
-  mutation PublishMutation($id: ID!) {
-    publish(id: $id) {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
-    }
-  }
-`
-
-const DeleteMutation = gql`
-  mutation DeleteMutation($id: ID!) {
-    deletePost(id: $id) {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
-    }
-  }
-`
-
-const Post = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) => {
+const Post = () => {
+  const queryClient = new QueryClient()
   const {
     query: { id },
   } = useRouter()
+  const { data } = useQuery({ queryKey: ["post", id], queryFn: () => GetPostById(id as string) })
 
-  const [publish] = useMutation(PublishMutation)
-  const [deletePost] = useMutation(DeleteMutation)
+  const { mutate, isSuccess, isLoading } = useMutation({
+    mutationFn: async (postId: string) =>
+      await request("http://localhost:3000/api/graphql", publishDocument, { id: postId }),
+    // When mutate is called:
+    onMutate: async (postId) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ["post", postId] })
 
-  if (!props.data.post) return
+      // Snapshot the previous value
+      const prevPost = queryClient.getQueryData<PostItemFragment>(["post", postId])
 
-  let title = props.data.post.title
-  if (!props.data.post.published) {
+      // Optimistically update to the new value
+      if (prevPost) {
+        queryClient.setQueryData<PostItemFragment>(["post", postId], {
+          ...prevPost,
+          published: true,
+        })
+      }
+
+      return { prevPost }
+    },
+    // If the mutation fails,
+    // use the context returned from onMutate to roll back
+    onError: (err, postId, context) => {
+      if (context?.prevPost) {
+        queryClient.setQueryData<PostItemFragment>(["post", postId], context.prevPost)
+      }
+      console.error("err:", err)
+    },
+    // Always refetch after error or success:
+    onSettled: (postId) => {
+      queryClient.invalidateQueries({ queryKey: ["post", postId] })
+    },
+  })
+  // const [deletePost] = useMutation(DeleteMutation)
+
+  if (isLoading) {
+    console.log("mutation loading")
+  }
+
+  if (!data || !data.post) return
+  const { post: postFragment } = data
+
+  const post = useFragment(PostFragment, postFragment)
+
+  let title = post.title
+  if (!post.published) {
     title = `${title} (Draft)`
   }
 
-  const authorName = props.data.post.author
-    ? props.data.post.author.name
-    : "Unknown author"
+  const authorName = post.author ? post.author.name : "Unknown author"
   return (
     <Layout>
       <div>
         <h2>{title}</h2>
         <p>By {authorName}</p>
-        <p>{props.data.post.content}</p>
-        {!props.data.post.published && (
+        <p>{post.content}</p>
+        {!post.published && (
           <button
-            onClick={async e => {
-              await publish({
-                variables: {
-                  id,
-                },
-              })
+            onClick={(e) => {
+              mutate(post.id)
               Router.push("/")
             }}
           >
@@ -78,12 +85,12 @@ const Post = (
           </button>
         )}
         <button
-          onClick={async e => {
-            await deletePost({
-              variables: {
-                id,
-              },
-            })
+          onClick={async (e) => {
+            // await deletePost({
+            //   variables: {
+            //     id,
+            //   },
+            // })
             Router.push("/")
           }}
         >
@@ -115,35 +122,34 @@ const Post = (
   )
 }
 
-export const getServerSideProps: GetServerSideProps<{
-  data: PostQueryQuery
-}> = async context => {
-  const id = String(
-    Array.isArray(context.params?.id)
-      ? context.params?.id[0]
-      : context.params?.id
-  )
-  const { data } = await client.query({
-    query: graphql(`
-      query PostQuery($id: ID!) {
-        post(id: $id) {
-          id
-          title
-          content
-          published
-          author {
-            id
-            name
-          }
-        }
-      }
-    `),
-    variables: { id },
+const GetPostById = async (postId: string) =>
+  await request("http://localhost:3000/api/graphql", getPostDocument, { id: postId })
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await prisma.post.findMany({})
+  const paths = posts.map((post) => ({
+    params: {
+      id: String(post.id),
+    },
+  }))
+  return {
+    paths,
+    fallback: false,
+  }
+}
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const queryClient = new QueryClient()
+  await queryClient.prefetchQuery({
+    queryKey: ["post", params?.id],
+    queryFn: () => GetPostById(params?.id as string),
+    staleTime: 60 * 1000 * 15, // activate gc every 15mins
+    // staleTime: 1500, // refresh the query every 15mins
   })
 
   return {
     props: {
-      data,
+      dehydratedState: dehydrate(queryClient),
     },
   }
 }

@@ -1,6 +1,6 @@
 import Router from "next/router"
 import ReactMarkdown from "react-markdown"
-import { FragmentType, graphql, useFragment } from "../lib/gql"
+import { graphql } from "../lib/gql"
 import { PostItemFragment } from "../lib/gql/graphql"
 
 export const PostFragment = graphql(`
@@ -10,6 +10,7 @@ export const PostFragment = graphql(`
     content
     published
     author {
+      id
       name
     }
   }

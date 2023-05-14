@@ -6,7 +6,7 @@ import Post, { PostFragment } from "../components/Post"
 import { graphql, useFragment } from "../lib/gql"
 
 const draftsQueryDocument = graphql(`
-  query DraftsQuery {
+  query GetDrafts {
     drafts {
       ...PostItem
     }
