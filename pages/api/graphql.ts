@@ -120,6 +120,18 @@ builder.mutationField("signupUser", (t) =>
   })
 )
 
+// builder.mutationField("readTextFile", (t) =>
+//   t.prismaField({
+//     type: "File",
+//     args: {
+//       file: t.arg({
+//         type: "File",
+//         required: true,
+//       }),
+//     },
+//   })
+// )
+
 builder.mutationField("deletePost", (t) =>
   t.prismaField({
     type: "Post",

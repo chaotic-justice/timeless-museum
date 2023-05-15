@@ -15,6 +15,8 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
 const documents = {
   "\n  fragment PostItem on Post {\n    id\n    title\n    content\n    published\n    author {\n      id\n      name\n    }\n  }\n":
     types.PostItemFragmentDoc,
+  "\n  mutation ReadFile($file: File!) {\n    readTextFile(file: $file)\n  }\n":
+    types.ReadFileDocument,
   "\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n":
     types.PublishMutationDocument,
   "\n  mutation DeleteMutation($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n":
@@ -49,6 +51,12 @@ export function graphql(source: string): unknown;
 export function graphql(
   source: "\n  fragment PostItem on Post {\n    id\n    title\n    content\n    published\n    author {\n      id\n      name\n    }\n  }\n"
 ): (typeof documents)["\n  fragment PostItem on Post {\n    id\n    title\n    content\n    published\n    author {\n      id\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  mutation ReadFile($file: File!) {\n    readTextFile(file: $file)\n  }\n"
+): (typeof documents)["\n  mutation ReadFile($file: File!) {\n    readTextFile(file: $file)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

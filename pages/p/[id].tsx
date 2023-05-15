@@ -16,7 +16,7 @@ const Post = () => {
   } = useRouter()
   const { data } = useQuery({ queryKey: ["post", id], queryFn: () => GetPostById(id as string) })
 
-  const { mutate, isSuccess, isLoading } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: async (postId: string) =>
       await request("http://localhost:3000/api/graphql", publishDocument, { id: postId }),
     // When mutate is called:

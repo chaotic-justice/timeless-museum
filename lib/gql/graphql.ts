@@ -18,6 +18,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  File: any;
 };
 
 export type Mutation = {
@@ -25,6 +26,7 @@ export type Mutation = {
   createDraft: Post;
   deletePost: Post;
   publish: Post;
+  readTextFile: Scalars["String"];
   signupUser: User;
 };
 
@@ -40,6 +42,10 @@ export type MutationDeletePostArgs = {
 
 export type MutationPublishArgs = {
   id: Scalars["ID"];
+};
+
+export type MutationReadTextFileArgs = {
+  file: Scalars["File"];
 };
 
 export type MutationSignupUserArgs = {
@@ -88,6 +94,15 @@ export type PostItemFragment = {
   published: boolean;
   author: { __typename?: "User"; id: string; name?: string | null };
 } & { " $fragmentName"?: "PostItemFragment" };
+
+export type ReadFileMutationVariables = Exact<{
+  file: Scalars["File"];
+}>;
+
+export type ReadFileMutation = {
+  __typename?: "Mutation";
+  readTextFile: string;
+};
 
 export type PublishMutationMutationVariables = Exact<{
   id: Scalars["ID"];
@@ -197,6 +212,45 @@ export const PostItemFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PostItemFragment, unknown>;
+export const ReadFileDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "ReadFile" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "file" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "File" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "readTextFile" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "file" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "file" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ReadFileMutation, ReadFileMutationVariables>;
 export const PublishMutationDocument = {
   kind: "Document",
   definitions: [
