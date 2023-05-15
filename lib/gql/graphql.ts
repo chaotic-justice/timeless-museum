@@ -109,14 +109,14 @@ export type PostItemFragment = {
   author: { __typename?: "User"; id: string; name?: string | null };
 } & { " $fragmentName"?: "PostItemFragment" };
 
-export type CreatePhotographMutationMutationVariables = Exact<{
+export type CreatePhotographMutationVariables = Exact<{
   title: Scalars["String"];
   imageUrl: Scalars["String"];
   category: Scalars["String"];
   description?: InputMaybe<Scalars["String"]>;
 }>;
 
-export type CreatePhotographMutationMutation = {
+export type CreatePhotographMutation = {
   __typename?: "Mutation";
   createPhotograph: {
     __typename?: "Photograph";
@@ -236,13 +236,13 @@ export const PostItemFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PostItemFragment, unknown>;
-export const CreatePhotographMutationDocument = {
+export const CreatePhotographDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "CreatePhotographMutation" },
+      name: { kind: "Name", value: "CreatePhotograph" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -352,8 +352,8 @@ export const CreatePhotographMutationDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  CreatePhotographMutationMutation,
-  CreatePhotographMutationMutationVariables
+  CreatePhotographMutation,
+  CreatePhotographMutationVariables
 >;
 export const PublishMutationDocument = {
   kind: "Document",

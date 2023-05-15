@@ -1,11 +1,18 @@
 import Link from "next/link"
+import { signIn, signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
 
 const Header = () => {
+  const { data: session } = useSession()
+  console.log("data", session)
   const router = useRouter()
 
   function isActive(pathname: string) {
     return router.pathname === pathname
+  }
+
+  const loginFlow = async () => {
+    await signIn()
   }
 
   return (
@@ -21,9 +28,10 @@ const Header = () => {
         </Link>
       </div>
       <div className="right">
-        <Link href="/signup" legacyBehavior>
-          <a data-active={isActive("/signup")}>Signup</a>
-        </Link>
+        <button onClick={loginFlow}>signup</button>
+        {/* <Link href="/signup" legacyBehavior> */}
+        {/* <a data-active={isActive("/signup")}>Signup</a> */}
+        {/* </Link> */}
         <Link href="/create" legacyBehavior>
           <a data-active={isActive("/create")}>+ Create draft</a>
         </Link>
@@ -64,7 +72,7 @@ const Header = () => {
         }
       `}</style>
     </nav>
-  );
+  )
 }
 
 export default Header

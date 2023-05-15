@@ -15,8 +15,8 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
 const documents = {
   "\n  fragment PostItem on Post {\n    id\n    title\n    content\n    published\n    author {\n      id\n      name\n    }\n  }\n":
     types.PostItemFragmentDoc,
-  "\n  mutation CreatePhotographMutation($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n":
-    types.CreatePhotographMutationDocument,
+  "\n  mutation CreatePhotograph($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n":
+    types.CreatePhotographDocument,
   "\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n":
     types.PublishMutationDocument,
   "\n  mutation DeleteMutation($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n":
@@ -55,8 +55,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  mutation CreatePhotographMutation($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n"
-): (typeof documents)["\n  mutation CreatePhotographMutation($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n"];
+  source: "\n  mutation CreatePhotograph($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n"
+): (typeof documents)["\n  mutation CreatePhotograph($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
