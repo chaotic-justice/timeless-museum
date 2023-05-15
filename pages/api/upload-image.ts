@@ -2,6 +2,7 @@
 import aws from 'aws-sdk'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+// migrate this to v3
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // 1.
@@ -25,9 +26,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       Fields: {
         key: req.query.file,
       },
-      Expires: 60, // seconds
+      Expires: 600, // seconds
       Conditions: [
-        ['content-length-range', 0, 5048576], // up to 1 MB
+        ["content-length-range", 0, 5048576], // up to 1 MB
       ],
     })
 

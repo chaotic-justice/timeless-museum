@@ -20,6 +20,7 @@ const Post = (props: { post: PostItemFragment }) => {
   const post = props.post
   const authorName = post.author ? post.author.name : "Unknown author"
   return (
+    // TODO: replace push with link && enalbe shallow routing
     <div onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}>
       <h2>{post.title}</h2>
       <small>By {authorName}</small>

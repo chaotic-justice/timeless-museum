@@ -1,17 +1,20 @@
-import { createYoga } from "graphql-yoga"
 import SchemaBuilder from "@pothos/core"
 import PrismaPlugin from "@pothos/plugin-prisma"
-import { DateTimeResolver } from "graphql-scalars"
+import { DateResolver } from "graphql-scalars"
+import { createYoga } from "graphql-yoga"
 
 import type PrismaTypes from "@pothos/plugin-prisma/generated"
 import type { NextApiRequest, NextApiResponse } from "next"
 
-import prisma from "../../lib/prisma"
 import { writeFileSync } from "fs"
-import { printSchema, lexicographicSortSchema } from "graphql"
+import { lexicographicSortSchema, printSchema } from "graphql"
 import path from "path"
+import prisma from "../../lib/prisma"
 
 const builder = new SchemaBuilder<{
+  Scalars: {
+    Date: { Input: Date; Output: Date }
+  }
   PrismaTypes: PrismaTypes
 }>({
   plugins: [PrismaPlugin],
@@ -19,6 +22,8 @@ const builder = new SchemaBuilder<{
     client: prisma,
   },
 })
+
+builder.addScalarType("Date", DateResolver, {})
 
 builder.queryType({})
 
@@ -40,6 +45,19 @@ builder.prismaObject("Post", {
     content: t.exposeString("content", { nullable: true }),
     published: t.exposeBoolean("published"),
     author: t.relation("author"),
+  }),
+})
+
+builder.prismaObject("Photograph", {
+  fields: (t) => ({
+    id: t.exposeID("id"),
+    title: t.exposeString("title"),
+    description: t.exposeString("description", { nullable: true }),
+    imageUrl: t.exposeString("imageUrl"),
+    category: t.exposeString("category"),
+    createdAt: t.expose("createdAt", {
+      type: "Date",
+    }),
   }),
 })
 
@@ -120,17 +138,43 @@ builder.mutationField("signupUser", (t) =>
   })
 )
 
-// builder.mutationField("readTextFile", (t) =>
-//   t.prismaField({
-//     type: "File",
-//     args: {
-//       file: t.arg({
-//         type: "File",
-//         required: true,
-//       }),
-//     },
-//   })
-// )
+builder.mutationField("createPhotograph", (t) =>
+  t.prismaField({
+    type: "Photograph",
+    args: {
+      title: t.arg.string({ required: true }),
+      description: t.arg.string({ required: false }),
+      imageUrl: t.arg.string({ required: true }),
+      category: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _parent, args, ctx) => {
+      const { title, description, imageUrl, category } = args
+
+      // if (!(await ctx).user) {
+      //   throw new Error("You have to be logged in to perform this action")
+      // }
+
+      // const user = await prisma.user.findUnique({
+      //   where: {
+      //     email: (await ctx).user?.email,
+      //   }
+      // })
+
+      // if (!user || user.role !== "ADMIN") {
+      //   throw new Error("You don have permission ot perform this action")
+      // }
+      return await prisma.photograph.create({
+        ...query,
+        data: {
+          title,
+          description,
+          imageUrl,
+          category,
+        },
+      })
+    },
+  })
+)
 
 builder.mutationField("deletePost", (t) =>
   t.prismaField({

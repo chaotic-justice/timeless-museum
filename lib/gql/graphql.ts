@@ -18,21 +18,29 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  File: any;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  Date: any;
 };
 
 export type Mutation = {
   __typename?: "Mutation";
   createDraft: Post;
+  createPhotograph: Photograph;
   deletePost: Post;
   publish: Post;
-  readTextFile: Scalars["String"];
   signupUser: User;
 };
 
 export type MutationCreateDraftArgs = {
   authorEmail: Scalars["String"];
   content?: InputMaybe<Scalars["String"]>;
+  title: Scalars["String"];
+};
+
+export type MutationCreatePhotographArgs = {
+  category: Scalars["String"];
+  description?: InputMaybe<Scalars["String"]>;
+  imageUrl: Scalars["String"];
   title: Scalars["String"];
 };
 
@@ -44,13 +52,19 @@ export type MutationPublishArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationReadTextFileArgs = {
-  file: Scalars["File"];
-};
-
 export type MutationSignupUserArgs = {
   email: Scalars["String"];
   name?: InputMaybe<Scalars["String"]>;
+};
+
+export type Photograph = {
+  __typename?: "Photograph";
+  category: Scalars["String"];
+  createdAt: Scalars["Date"];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  imageUrl: Scalars["String"];
+  title: Scalars["String"];
 };
 
 export type Post = {
@@ -95,13 +109,23 @@ export type PostItemFragment = {
   author: { __typename?: "User"; id: string; name?: string | null };
 } & { " $fragmentName"?: "PostItemFragment" };
 
-export type ReadFileMutationVariables = Exact<{
-  file: Scalars["File"];
+export type CreatePhotographMutationMutationVariables = Exact<{
+  title: Scalars["String"];
+  imageUrl: Scalars["String"];
+  category: Scalars["String"];
+  description?: InputMaybe<Scalars["String"]>;
 }>;
 
-export type ReadFileMutation = {
+export type CreatePhotographMutationMutation = {
   __typename?: "Mutation";
-  readTextFile: string;
+  createPhotograph: {
+    __typename?: "Photograph";
+    title: string;
+    createdAt: any;
+    imageUrl: string;
+    category: string;
+    description?: string | null;
+  };
 };
 
 export type PublishMutationMutationVariables = Exact<{
@@ -212,21 +236,63 @@ export const PostItemFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PostItemFragment, unknown>;
-export const ReadFileDocument = {
+export const CreatePhotographMutationDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "ReadFile" },
+      name: { kind: "Name", value: "CreatePhotographMutation" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "file" } },
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "title" },
+          },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "File" } },
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
           },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "imageUrl" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "category" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "String" },
+            },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "description" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
         },
       ],
       selectionSet: {
@@ -234,23 +300,61 @@ export const ReadFileDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "readTextFile" },
+            name: { kind: "Name", value: "createPhotograph" },
             arguments: [
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "file" },
+                name: { kind: "Name", value: "title" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "file" },
+                  name: { kind: "Name", value: "title" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "imageUrl" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "imageUrl" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "category" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "category" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "description" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "description" },
                 },
               },
             ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "imageUrl" } },
+                { kind: "Field", name: { kind: "Name", value: "category" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
           },
         ],
       },
     },
   ],
-} as unknown as DocumentNode<ReadFileMutation, ReadFileMutationVariables>;
+} as unknown as DocumentNode<
+  CreatePhotographMutationMutation,
+  CreatePhotographMutationMutationVariables
+>;
 export const PublishMutationDocument = {
   kind: "Document",
   definitions: [
