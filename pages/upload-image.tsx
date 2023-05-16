@@ -3,6 +3,7 @@ import { type SubmitHandler, useForm } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../lib/gql/graphql"
 import request from "graphql-request"
+import Layout from "../components/Layout"
 
 type FormValues = {
   title: string
@@ -30,7 +31,7 @@ const Uploaded = () => {
     if (!e.target.files || e.target.files.length <= 0) return
     const file = e.target.files[0]
     const filename = encodeURIComponent(file.name)
-    const res = await fetch(`/api/upload-image?file=${filename}`)
+    const res = await fetch(`/api/presign?file=${filename}`)
     const data = await res.json()
     const formData = new FormData()
 
@@ -62,56 +63,57 @@ const Uploaded = () => {
   }
 
   return (
-    <div className="container mx-auto max-w-md py-12">
-      <Toaster />
-      <h1 className="text-3xl font-medium my-5">Add a new image</h1>
-      <form className="grid grid-cols-1 gap-y-6 shadow-lg p-8 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
-        <label className="block">
-          <span className="text-gray-700">Title</span>
-          <input
-            placeholder="Title"
-            {...register("title", { required: true })}
-            name="title"
-            type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Description</span>
-          <input
-            placeholder="Description"
-            {...register("description", { required: false })}
-            name="description"
-            type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Category</span>
-          <input
-            placeholder="Name"
-            {...register("category", { required: true })}
-            name="category"
-            type="text"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
-          <input
-            {...register("images", { required: true })}
-            onChange={uploadPhoto}
-            type="file"
-            accept="image/*"
-            name="images"
-          />
-        </label>
-        <button
-          disabled={false}
-          type="submit"
-          className="my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600"
-        >
-          {/* {loading ? (
+    <Layout>
+      <div className="container mx-auto max-w-md py-12">
+        <Toaster />
+        <h1 className="text-3xl font-medium my-5">Add a new image</h1>
+        <form className="grid grid-cols-1 gap-y-6 shadow-lg p-8 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
+          <label className="block">
+            <span className="text-gray-700">Title</span>
+            <input
+              placeholder="Title"
+              {...register("title", { required: true })}
+              name="title"
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </label>
+          <label className="block">
+            <span className="text-gray-700">Description</span>
+            <input
+              placeholder="Description"
+              {...register("description", { required: false })}
+              name="description"
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </label>
+          <label className="block">
+            <span className="text-gray-700">Category</span>
+            <input
+              placeholder="Name"
+              {...register("category", { required: true })}
+              name="category"
+              type="text"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </label>
+          <label className="block">
+            <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
+            <input
+              {...register("images", { required: true })}
+              onChange={uploadPhoto}
+              type="file"
+              accept="image/*"
+              name="images"
+            />
+          </label>
+          <button
+            disabled={false}
+            type="submit"
+            className="my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600"
+          >
+            {/* {loading ? (
             <span className="flex items-center justify-center">
               <svg
                 className="w-6 h-6 animate-spin mr-1"
@@ -126,10 +128,11 @@ const Uploaded = () => {
           ) : (
             <span>Create Link</span>
             )} */}
-          <span>add image</span>
-        </button>
-      </form>
-    </div>
+            <span>add image</span>
+          </button>
+        </form>
+      </div>
+    </Layout>
   )
 }
 

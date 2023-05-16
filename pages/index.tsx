@@ -2,7 +2,8 @@ import Layout from "../components/Layout"
 import gql from "graphql-tag"
 import client from "../lib/apollo-client"
 import Post, { PostProps } from "../components/Post"
-
+import { useSession } from "next-auth/react"
+import prisma from "../lib/prisma"
 
 const Blog: React.FC<{ data: { feed: PostProps[] } }> = (props) => {
   return (
@@ -10,7 +11,7 @@ const Blog: React.FC<{ data: { feed: PostProps[] } }> = (props) => {
       <div className="page">
         <h1>My Blog</h1>
         <main>
-          {props.data.feed.map(post => (
+          {props.data.feed.map((post) => (
             <div key={post.id} className="post">
               <Post post={post} />
             </div>
@@ -51,13 +52,13 @@ export async function getServerSideProps() {
         }
       }
     `,
-  });
+  })
 
   return {
     props: {
-      data
+      data,
     },
-  };
+  }
 }
 
 export default Blog
