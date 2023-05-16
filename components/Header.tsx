@@ -3,16 +3,12 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
 
 const Header = () => {
-  const { data: session } = useSession()
-  console.log("data", session)
+  const { data: session, status } = useSession()
+  console.log("session", session)
   const router = useRouter()
 
   function isActive(pathname: string) {
     return router.pathname === pathname
-  }
-
-  const loginFlow = async () => {
-    await signIn()
   }
 
   return (
@@ -28,12 +24,17 @@ const Header = () => {
         </Link>
       </div>
       <div className="right">
-        <button onClick={loginFlow}>signup</button>
-        {/* <Link href="/signup" legacyBehavior> */}
-        {/* <a data-active={isActive("/signup")}>Signup</a> */}
-        {/* </Link> */}
-        <Link href="/create" legacyBehavior>
-          <a data-active={isActive("/create")}>+ Create draft</a>
+        {status === "authenticated" ? (
+          <a href="#">
+            <button onClick={() => signOut()}>logout</button>
+          </a>
+        ) : (
+          <a href="/api/auth/signin">
+            <button onClick={() => signIn()}>login</button>
+          </a>
+        )}
+        <Link href="/upload-image" legacyBehavior>
+          <a data-active={isActive("/upload-image")}>+ upload photo</a>
         </Link>
       </div>
       <style jsx>{`
