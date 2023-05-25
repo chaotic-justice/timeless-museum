@@ -4,7 +4,6 @@ import { useRouter } from "next/router"
 
 const Header = () => {
   const { data: session, status } = useSession()
-  console.log("session", session)
   const router = useRouter()
 
   function isActive(pathname: string) {
@@ -14,13 +13,13 @@ const Header = () => {
   return (
     <nav>
       <div className="left">
-        <Link href="/" legacyBehavior>
+        <Link href="/" legacyBehavior shallow={true}>
           <a className="bold" data-active={isActive("/")}>
-            Blog
+            wall
           </a>
         </Link>
         <Link href="/drafts" legacyBehavior>
-          <a data-active={isActive("/drafts")}>Drafts</a>
+          <a data-active={isActive("/drafts")}>archived</a>
         </Link>
       </div>
       <div className="right">

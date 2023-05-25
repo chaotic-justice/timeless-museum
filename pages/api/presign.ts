@@ -1,6 +1,5 @@
-// pages/api/upload-image.ts
-import aws from 'aws-sdk'
-import type { NextApiRequest, NextApiResponse } from 'next'
+import aws from "aws-sdk"
+import type { NextApiRequest, NextApiResponse } from "next"
 
 // migrate this to v3
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -17,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       accessKeyId: process.env.APP_AWS_ACCESS_KEY,
       secretAccessKey: process.env.APP_AWS_SECRET_KEY,
       region: process.env.APP_AWS_REGION,
-      signatureVersion: 'v4',
+      signatureVersion: "v4",
     })
 
     // 3.

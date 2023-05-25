@@ -72,6 +72,21 @@ builder.queryField("feed", (t) =>
   })
 )
 
+builder.queryField("getPhotographs", (t) =>
+  t.prismaField({
+    type: ["Photograph"],
+    resolve: async (query, _parent, _args, _info) =>
+      prisma.photograph.findMany({
+        ...query,
+        where: {
+          imageUrl: {
+            not: "",
+          },
+        },
+      }),
+  })
+)
+
 builder.queryField("post", (t) =>
   t.prismaField({
     type: "Post",
@@ -242,15 +257,15 @@ export default createYoga<{
   req: NextApiRequest
   res: NextApiResponse
 }>({
-  cors: (request) => {
-    const requestOrigin = request.headers.get("origin") || "http://localhost:3000"
-    return {
-      origin: requestOrigin,
-      credentials: true,
-      allowedHeaders: ["Content-Type, x-requested-with"],
-      methods: ["POST"],
-    }
-  },
+  // cors: (request) => {
+  //   const requestOrigin = request.headers.get("origin") || "http://localhost:3000"
+  //   return {
+  //     origin: requestOrigin,
+  //     credentials: true,
+  //     allowedHeaders: ["Content-Type, x-requested-with"],
+  //     methods: ["POST"],
+  //   }
+  // },
   schema,
   graphqlEndpoint: "/api/graphql",
 })
