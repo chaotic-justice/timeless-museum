@@ -4,7 +4,7 @@ import { GetServerSideProps } from "next"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import Layout from "../components/Layout"
-import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../lib/gql/graphql"
+import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../library/gql/graphql"
 
 type FormValues = {
   title: string
@@ -13,7 +13,7 @@ type FormValues = {
   images: FileList
 }
 
-const Uploaded = () => {
+const Uploaded = (props) => {
   const {
     register,
     handleSubmit,

@@ -3,7 +3,7 @@ import request from "graphql-request"
 import { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import Layout from "../components/Layout"
 import Post, { PostFragment } from "../components/Post"
-import { graphql, useFragment } from "../lib/gql"
+import { graphql, useFragment } from "../library/gql"
 
 const draftsQueryDocument = graphql(`
   query GetDrafts {

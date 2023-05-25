@@ -15,7 +15,7 @@ export const createPhotograph = graphql(`
 
 export const getPhotographsDocument = graphql(`
   query GetPhotographs {
-    getPhotographs {
+    photographs {
       id
       title
       description

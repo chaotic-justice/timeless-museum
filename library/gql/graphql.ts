@@ -79,9 +79,8 @@ export type Post = {
 export type Query = {
   __typename?: "Query";
   drafts: Array<Post>;
-  feed: Array<Post>;
   filterPosts: Array<Post>;
-  getPhotographs: Array<Photograph>;
+  photographs: Array<Photograph>;
   post?: Maybe<Post>;
 };
 
@@ -133,7 +132,7 @@ export type GetPhotographsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetPhotographsQuery = {
   __typename?: "Query";
-  getPhotographs: Array<{
+  photographs: Array<{
     __typename?: "Photograph";
     id: string;
     title: string;
@@ -188,21 +187,6 @@ export type GetDraftsQuery = {
       " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
     }
   >;
-};
-
-export type SignupMutationMutationVariables = Exact<{
-  name?: InputMaybe<Scalars["String"]>;
-  email: Scalars["String"];
-}>;
-
-export type SignupMutationMutation = {
-  __typename?: "Mutation";
-  signupUser: {
-    __typename?: "User";
-    id: string;
-    name?: string | null;
-    email?: string | null;
-  };
 };
 
 export const PostItemFragmentDoc = {
@@ -369,7 +353,7 @@ export const GetPhotographsDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "getPhotographs" },
+            name: { kind: "Name", value: "photographs" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
@@ -677,72 +661,3 @@ export const GetDraftsDocument = {
     },
   ],
 } as unknown as DocumentNode<GetDraftsQuery, GetDraftsQueryVariables>;
-export const SignupMutationDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "SignupMutation" },
-      variableDefinitions: [
-        {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
-        },
-        {
-          kind: "VariableDefinition",
-          variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "email" },
-          },
-          type: {
-            kind: "NonNullType",
-            type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
-            },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "signupUser" },
-            arguments: [
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "name" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "name" },
-                },
-              },
-              {
-                kind: "Argument",
-                name: { kind: "Name", value: "email" },
-                value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "email" },
-                },
-              },
-            ],
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
-                { kind: "Field", name: { kind: "Name", value: "email" } },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<
-  SignupMutationMutation,
-  SignupMutationMutationVariables
->;

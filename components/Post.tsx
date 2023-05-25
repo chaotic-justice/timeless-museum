@@ -1,7 +1,7 @@
 import Router from "next/router"
 import ReactMarkdown from "react-markdown"
-import { graphql } from "../lib/gql"
-import { PostItemFragment } from "../lib/gql/graphql"
+import { graphql } from "../library/gql"
+import { PostItemFragment } from "../library/gql/graphql"
 
 export const PostFragment = graphql(`
   fragment PostItem on Post {
