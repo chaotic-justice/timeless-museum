@@ -1,64 +1,36 @@
+import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
+import request from "graphql-request"
+import { GetStaticProps } from "next"
+import Gallery from "../components/Gallery"
 import Layout from "../components/Layout"
-import gql from "graphql-tag"
-import client from "../lib/apollo-client"
-import Post, { PostProps } from "../components/Post"
-import { useSession } from "next-auth/react"
-import prisma from "../lib/prisma"
+import { getPhotographsDocument } from "../lib/documents"
 
-const Blog: React.FC<{ data: { feed: PostProps[] } }> = (props) => {
+const Wall = () => {
+  const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getPhotographs() })
+  if (data?.getPhotographs === undefined) return
+
   return (
     <Layout>
-      <div className="page">
-        <h1>My Blog</h1>
-        <main>
-          {props.data.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
-      </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
+      <Gallery images={data?.getPhotographs} />
     </Layout>
   )
 }
 
-export async function getServerSideProps() {
-  const { data } = await client.query({
-    query: gql`
-      query FeedQuery {
-        feed {
-          id
-          title
-          content
-          published
-          author {
-            id
-            name
-          }
-        }
-      }
-    `,
+const getPhotographs = async () => await request("http://localhost:3000/api/graphql", getPhotographsDocument)
+
+export const getStaticProps: GetStaticProps = async () => {
+  const queryClient = new QueryClient()
+  await queryClient.prefetchQuery({
+    queryKey: ["photographs"],
+    queryFn: () => getPhotographs(),
+    staleTime: 60 * 1000 * 15,
   })
 
   return {
     props: {
-      data,
+      dehydratedState: dehydrate(queryClient),
     },
   }
 }
 
-export default Blog
+export default Wall

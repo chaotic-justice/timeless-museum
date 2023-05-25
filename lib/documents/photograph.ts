@@ -12,3 +12,16 @@ export const createPhotograph = graphql(`
     }
   }
 `)
+
+export const getPhotographsDocument = graphql(`
+  query GetPhotographs {
+    getPhotographs {
+      id
+      title
+      description
+      category
+      createdAt
+      imageUrl
+    }
+  }
+`)

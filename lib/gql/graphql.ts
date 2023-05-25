@@ -18,7 +18,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: any;
 };
 
@@ -81,6 +81,7 @@ export type Query = {
   drafts: Array<Post>;
   feed: Array<Post>;
   filterPosts: Array<Post>;
+  getPhotographs: Array<Photograph>;
   post?: Maybe<Post>;
 };
 
@@ -94,7 +95,7 @@ export type QueryPostArgs = {
 
 export type User = {
   __typename?: "User";
-  email: Scalars["String"];
+  email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   name?: Maybe<Scalars["String"]>;
   posts: Array<Post>;
@@ -126,6 +127,21 @@ export type CreatePhotographMutation = {
     category: string;
     description?: string | null;
   };
+};
+
+export type GetPhotographsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetPhotographsQuery = {
+  __typename?: "Query";
+  getPhotographs: Array<{
+    __typename?: "Photograph";
+    id: string;
+    title: string;
+    description?: string | null;
+    category: string;
+    createdAt: any;
+    imageUrl: string;
+  }>;
 };
 
 export type PublishMutationMutationVariables = Exact<{
@@ -174,20 +190,6 @@ export type GetDraftsQuery = {
   >;
 };
 
-export type FeedQueryQueryVariables = Exact<{ [key: string]: never }>;
-
-export type FeedQueryQuery = {
-  __typename?: "Query";
-  feed: Array<{
-    __typename?: "Post";
-    id: string;
-    title: string;
-    content?: string | null;
-    published: boolean;
-    author: { __typename?: "User"; id: string; name?: string | null };
-  }>;
-};
-
 export type SignupMutationMutationVariables = Exact<{
   name?: InputMaybe<Scalars["String"]>;
   email: Scalars["String"];
@@ -199,7 +201,7 @@ export type SignupMutationMutation = {
     __typename?: "User";
     id: string;
     name?: string | null;
-    email: string;
+    email?: string | null;
   };
 };
 
@@ -355,6 +357,36 @@ export const CreatePhotographDocument = {
   CreatePhotographMutation,
   CreatePhotographMutationVariables
 >;
+export const GetPhotographsDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetPhotographs" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getPhotographs" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "category" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: "Field", name: { kind: "Name", value: "imageUrl" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetPhotographsQuery, GetPhotographsQueryVariables>;
 export const PublishMutationDocument = {
   kind: "Document",
   definitions: [
@@ -645,45 +677,6 @@ export const GetDraftsDocument = {
     },
   ],
 } as unknown as DocumentNode<GetDraftsQuery, GetDraftsQueryVariables>;
-export const FeedQueryDocument = {
-  kind: "Document",
-  definitions: [
-    {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "FeedQuery" },
-      selectionSet: {
-        kind: "SelectionSet",
-        selections: [
-          {
-            kind: "Field",
-            name: { kind: "Name", value: "feed" },
-            selectionSet: {
-              kind: "SelectionSet",
-              selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-                { kind: "Field", name: { kind: "Name", value: "content" } },
-                { kind: "Field", name: { kind: "Name", value: "published" } },
-                {
-                  kind: "Field",
-                  name: { kind: "Name", value: "author" },
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [
-                      { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<FeedQueryQuery, FeedQueryQueryVariables>;
 export const SignupMutationDocument = {
   kind: "Document",
   definitions: [

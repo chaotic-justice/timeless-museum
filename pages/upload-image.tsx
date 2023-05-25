@@ -1,9 +1,10 @@
-import { useMutation } from "@tanstack/react-query"
-import { type SubmitHandler, useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
-import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../lib/gql/graphql"
+import { QueryClient, dehydrate, useMutation } from "@tanstack/react-query"
 import request from "graphql-request"
+import { GetServerSideProps } from "next"
+import { useForm, type SubmitHandler } from "react-hook-form"
+import toast, { Toaster } from "react-hot-toast"
 import Layout from "../components/Layout"
+import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../lib/gql/graphql"
 
 type FormValues = {
   title: string
@@ -33,6 +34,7 @@ const Uploaded = () => {
     const filename = encodeURIComponent(file.name)
     const res = await fetch(`/api/presign?file=${filename}`)
     const data = await res.json()
+    console.log("data", data)
     const formData = new FormData()
 
     Object.entries({ ...data.fields, file }).forEach(([key, value]) => {
@@ -57,9 +59,7 @@ const Uploaded = () => {
     const { title, category, description, images } = data
     console.log("images", images)
     const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${images[0]?.name}`
-    console.log("imageUrl", imageUrl)
     mutate({ title, category, description, imageUrl })
-    console.log("isSuccess", isSuccess)
   }
 
   return (
@@ -113,21 +113,6 @@ const Uploaded = () => {
             type="submit"
             className="my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600"
           >
-            {/* {loading ? (
-            <span className="flex items-center justify-center">
-              <svg
-                className="w-6 h-6 animate-spin mr-1"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z" />
-              </svg>
-              Creating...
-            </span>
-          ) : (
-            <span>Create Link</span>
-            )} */}
             <span>add image</span>
           </button>
         </form>
@@ -135,5 +120,15 @@ const Uploaded = () => {
     </Layout>
   )
 }
+
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const queryClient = new QueryClient()
+
+//   return {
+//     props: {
+//       dehyratedState: dehydrate(queryClient),
+//     },
+//   }
+// }
 
 export default Uploaded
