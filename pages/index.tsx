@@ -3,15 +3,15 @@ import request from "graphql-request"
 import { GetStaticProps } from "next"
 import Gallery from "../components/Gallery"
 import Layout from "../components/Layout"
-import { getPhotographsDocument } from "../lib/documents"
+import { getPhotographsDocument } from "../library/documents"
 
 const Wall = () => {
   const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getPhotographs() })
-  if (data?.getPhotographs === undefined) return
+  if (data?.photographs === undefined) return
 
   return (
     <Layout>
-      <Gallery images={data?.getPhotographs} />
+      <Gallery images={data?.photographs} />
     </Layout>
   )
 }

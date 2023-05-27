@@ -2,8 +2,8 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { NextApiHandler } from "next"
 import NextAuth, { NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import adminUsers from "../../../lib/admins"
-import prisma from "../../../lib/prisma"
+import adminUsers from "../../../library/admins"
+import prisma from "../../../library/prisma"
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
 export default authHandler

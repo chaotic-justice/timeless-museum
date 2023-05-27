@@ -17,7 +17,7 @@ const documents = {
     types.PostItemFragmentDoc,
   "\n  mutation CreatePhotograph($title: String!, $imageUrl: String!, $category: String!, $description: String) {\n    createPhotograph(title: $title, imageUrl: $imageUrl, category: $category, description: $description) {\n      title\n      createdAt\n      imageUrl\n      category\n      description\n      createdAt\n    }\n  }\n":
     types.CreatePhotographDocument,
-  "\n  query GetPhotographs {\n    getPhotographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n":
+  "\n  query GetPhotographs {\n    photographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n":
     types.GetPhotographsDocument,
   "\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n":
     types.PublishMutationDocument,
@@ -27,8 +27,6 @@ const documents = {
     types.GetPostByIdDocument,
   "\n  query GetDrafts {\n    drafts {\n      ...PostItem\n    }\n  }\n":
     types.GetDraftsDocument,
-  "\n  mutation SignupMutation($name: String, $email: String!) {\n    signupUser(name: $name, email: $email) {\n      id\n      name\n      email\n    }\n  }\n":
-    types.SignupMutationDocument,
 };
 
 /**
@@ -61,8 +59,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query GetPhotographs {\n    getPhotographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n"
-): (typeof documents)["\n  query GetPhotographs {\n    getPhotographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n"];
+  source: "\n  query GetPhotographs {\n    photographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n"
+): (typeof documents)["\n  query GetPhotographs {\n    photographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -87,12 +85,6 @@ export function graphql(
 export function graphql(
   source: "\n  query GetDrafts {\n    drafts {\n      ...PostItem\n    }\n  }\n"
 ): (typeof documents)["\n  query GetDrafts {\n    drafts {\n      ...PostItem\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  mutation SignupMutation($name: String, $email: String!) {\n    signupUser(name: $name, email: $email) {\n      id\n      name\n      email\n    }\n  }\n"
-): (typeof documents)["\n  mutation SignupMutation($name: String, $email: String!) {\n    signupUser(name: $name, email: $email) {\n      id\n      name\n      email\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

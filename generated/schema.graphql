@@ -30,10 +30,15 @@ type Post {
 
 type Query {
   drafts: [Post!]!
-  feed: [Post!]!
   filterPosts(searchString: String): [Post!]!
-  getPhotographs: [Photograph!]!
+  photographs: [Photograph!]!
   post(id: ID!): Post
+  users: [User!]!
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 type User {
@@ -41,4 +46,5 @@ type User {
   id: ID!
   name: String
   posts: [Post!]!
+  role: Role!
 }

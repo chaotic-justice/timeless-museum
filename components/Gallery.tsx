@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { Alert, Card } from "flowbite-react"
-import { Photograph } from "../lib/gql/graphql"
+import { Photograph } from "../library/gql/graphql"
 
 const ImageWithDimensions = ({ photo }: { photo: Photograph }) => {
   return (

@@ -4,10 +4,10 @@ import { GetStaticPaths, GetStaticProps } from "next"
 import Router, { useRouter } from "next/router"
 import Layout from "../../components/Layout"
 import { PostFragment } from "../../components/Post"
-import { getPostDocument, publishDocument } from "../../lib/documents"
-import { useFragment } from "../../lib/gql"
-import { PostItemFragment } from "../../lib/gql/graphql"
-import prisma from "../../lib/prisma"
+import { getPostDocument, publishDocument } from "../../library/documents"
+import { useFragment } from "../../library/gql"
+import { PostItemFragment } from "../../library/gql/graphql"
+import prisma from "../../library/prisma"
 
 const Post = () => {
   const queryClient = new QueryClient()
