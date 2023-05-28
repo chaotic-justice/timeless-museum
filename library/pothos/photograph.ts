@@ -1,5 +1,5 @@
 import prisma from "../prisma"
-import { TField, builder } from "./builder"
+import { TQueryFieldBuilder, builder } from "./builder"
 
 builder.prismaObject("Photograph", {
   fields: (t) => ({
@@ -14,7 +14,7 @@ builder.prismaObject("Photograph", {
   }),
 })
 
-export const photographsQueryType = (t: TField) =>
+export const photographsQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
     type: ["Photograph"],
     resolve: async (query, _parent, _args, _info) =>

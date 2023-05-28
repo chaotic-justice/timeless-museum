@@ -16,7 +16,20 @@ export const builder = new SchemaBuilder<{
   },
 })
 
-export type TField = PothosSchemaTypes.QueryFieldBuilder<
+export type TQueryFieldBuilder = PothosSchemaTypes.QueryFieldBuilder<
+  PothosSchemaTypes.ExtendDefaultTypes<{
+    Scalars: {
+      Date: {
+        Input: Date
+        Output: Date
+      }
+    }
+    PrismaTypes: PrismaTypes
+  }>,
+  {}
+>
+
+export type TMutationFieldBuilder = PothosSchemaTypes.MutationFieldBuilder<
   PothosSchemaTypes.ExtendDefaultTypes<{
     Scalars: {
       Date: {
