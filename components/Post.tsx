@@ -24,6 +24,7 @@ const Post = (props: { post: PostItemFragment }) => {
     <div onClick={() => Router.push("/p/[id]", `/p/${post.id}`)}>
       <h2>{post.title}</h2>
       <small>By {authorName}</small>
+      {/* eslint-disable-next-line react/no-children-prop */}
       <ReactMarkdown children={post.content ?? "no content"} />
       <style jsx>{`
         div {

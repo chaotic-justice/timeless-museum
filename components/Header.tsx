@@ -28,9 +28,7 @@ const Header = () => {
             <button onClick={() => signOut()}>logout</button>
           </a>
         ) : (
-          <a href="/api/auth/signin">
-            <button onClick={() => signIn()}>login</button>
-          </a>
+          <button onClick={() => signIn()}>login</button>
         )}
         <Link href="/upload-image" legacyBehavior>
           <a data-active={isActive("/upload-image")}>+ upload photo</a>

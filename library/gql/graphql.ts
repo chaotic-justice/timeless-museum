@@ -27,8 +27,8 @@ export type Mutation = {
   createDraft: Post;
   createPhotograph: Photograph;
   deletePost: Post;
-  publish: Post;
-  signupUser: User;
+  publishDraft: Post;
+  signUp: User;
 };
 
 export type MutationCreateDraftArgs = {
@@ -48,11 +48,11 @@ export type MutationDeletePostArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationPublishArgs = {
+export type MutationPublishDraftArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationSignupUserArgs = {
+export type MutationSignUpArgs = {
   email: Scalars["String"];
   name?: InputMaybe<Scalars["String"]>;
 };
@@ -82,6 +82,7 @@ export type Query = {
   filterPosts: Array<Post>;
   photographs: Array<Photograph>;
   post?: Maybe<Post>;
+  users: Array<User>;
 };
 
 export type QueryFilterPostsArgs = {
@@ -92,12 +93,18 @@ export type QueryPostArgs = {
   id: Scalars["ID"];
 };
 
+export enum Role {
+  Admin = "ADMIN",
+  User = "USER",
+}
+
 export type User = {
   __typename?: "User";
   email?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   name?: Maybe<Scalars["String"]>;
   posts: Array<Post>;
+  role: Role;
 };
 
 export type PostItemFragment = {
@@ -143,22 +150,22 @@ export type GetPhotographsQuery = {
   }>;
 };
 
-export type PublishMutationMutationVariables = Exact<{
+export type PublishDraftMutationVariables = Exact<{
   id: Scalars["ID"];
 }>;
 
-export type PublishMutationMutation = {
+export type PublishDraftMutation = {
   __typename?: "Mutation";
-  publish: { __typename?: "Post" } & {
+  publishDraft: { __typename?: "Post" } & {
     " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
   };
 };
 
-export type DeleteMutationMutationVariables = Exact<{
+export type DeletePostMutationVariables = Exact<{
   id: Scalars["ID"];
 }>;
 
-export type DeleteMutationMutation = {
+export type DeletePostMutation = {
   __typename?: "Mutation";
   deletePost: { __typename?: "Post" } & {
     " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
@@ -371,13 +378,13 @@ export const GetPhotographsDocument = {
     },
   ],
 } as unknown as DocumentNode<GetPhotographsQuery, GetPhotographsQueryVariables>;
-export const PublishMutationDocument = {
+export const PublishDraftDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "PublishMutation" },
+      name: { kind: "Name", value: "PublishDraft" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -393,7 +400,7 @@ export const PublishMutationDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "publish" },
+            name: { kind: "Name", value: "publishDraft" },
             arguments: [
               {
                 kind: "Argument",
@@ -447,16 +454,16 @@ export const PublishMutationDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  PublishMutationMutation,
-  PublishMutationMutationVariables
+  PublishDraftMutation,
+  PublishDraftMutationVariables
 >;
-export const DeleteMutationDocument = {
+export const DeletePostDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "DeleteMutation" },
+      name: { kind: "Name", value: "DeletePost" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -525,10 +532,7 @@ export const DeleteMutationDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<
-  DeleteMutationMutation,
-  DeleteMutationMutationVariables
->;
+} as unknown as DocumentNode<DeletePostMutation, DeletePostMutationVariables>;
 export const GetPostByIdDocument = {
   kind: "Document",
   definitions: [
