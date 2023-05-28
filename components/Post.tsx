@@ -3,19 +3,6 @@ import ReactMarkdown from "react-markdown"
 import { graphql } from "../library/gql"
 import { PostItemFragment } from "../library/gql/graphql"
 
-export const PostFragment = graphql(`
-  fragment PostItem on Post {
-    id
-    title
-    content
-    published
-    author {
-      id
-      name
-    }
-  }
-`)
-
 const Post = (props: { post: PostItemFragment }) => {
   const post = props.post
   const authorName = post.author ? post.author.name : "Unknown author"

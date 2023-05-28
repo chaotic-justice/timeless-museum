@@ -1,28 +1,25 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import request from "graphql-request"
-import { GetStaticProps } from "next"
+import { GetStaticProps, InferGetStaticPropsType } from "next"
 import Gallery from "../components/Gallery"
 import Layout from "../components/Layout"
-import { getPhotographsDocument } from "../library/documents"
+import { getArtworks } from "../library/hooks"
 
 const Wall = () => {
-  const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getPhotographs() })
-  if (data?.photographs === undefined) return
+  const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getArtworks() })
+  if (data?.getArtworks === undefined) return
 
   return (
     <Layout>
-      <Gallery images={data?.photographs} />
+      <Gallery artworks={data?.getArtworks} />
     </Layout>
   )
 }
-
-const getPhotographs = async () => await request("http://localhost:3000/api/graphql", getPhotographsDocument)
 
 export const getStaticProps: GetStaticProps = async () => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
     queryKey: ["photographs"],
-    queryFn: () => getPhotographs(),
+    queryFn: () => getArtworks(),
     staleTime: 60 * 1000 * 15,
   })
 

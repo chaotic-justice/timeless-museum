@@ -1,24 +1,14 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import request from "graphql-request"
 import { GetServerSideProps } from "next"
 import Layout from "../components/Layout"
-import Post, { PostFragment } from "../components/Post"
-import { graphql, useFragment } from "../library/gql"
-
-const draftsQueryDocument = graphql(`
-  query GetDrafts {
-    drafts {
-      ...PostItem
-    }
-  }
-`)
-
-const getDrafts = async () => await request(process.env.NEXT_PUBLIC_GQL_API as string, draftsQueryDocument)
+import Post from "../components/Post"
+import { useFragment } from "../library/gql"
+import { PostFragment, getDrafts } from "../library/hooks"
 
 const Drafts = () => {
   const { data } = useQuery({ queryKey: ["drafts"], queryFn: getDrafts })
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const drafts = data?.drafts.map((d) => useFragment(PostFragment, d))
+  const drafts = data?.getDrafts.map((d) => useFragment(PostFragment, d))
   if (!drafts) return
 
   return (

@@ -1,12 +1,13 @@
+import { Artwork } from "@prisma/client"
 import prisma from "../prisma"
-import { TQueryFieldBuilder, builder } from "./builder"
+import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
 
-builder.prismaObject("Photograph", {
+builder.prismaObject("Artwork", {
   fields: (t) => ({
     id: t.exposeID("id"),
     title: t.exposeString("title"),
     description: t.exposeString("description", { nullable: true }),
-    imageUrl: t.exposeString("imageUrl"),
+    imageUrls: t.exposeStringList("imageUrls"),
     category: t.exposeString("category"),
     createdAt: t.expose("createdAt", {
       type: "Date",
@@ -14,31 +15,51 @@ builder.prismaObject("Photograph", {
   }),
 })
 
-export const photographsQueryType = (t: TQueryFieldBuilder) =>
+export const artworkQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
-    type: ["Photograph"],
-    resolve: async (query, _parent, _args, _info) =>
-      prisma.photograph.findMany({
+    type: "Artwork",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    nullable: true,
+    resolve: async (query, _parent, args, _info) =>
+      await prisma.artwork.findUnique({
         ...query,
         where: {
-          imageUrl: {
-            not: "",
-          },
+          id: Number(args.id),
         },
       }),
   })
 
-builder.mutationField("createPhotograph", (t) =>
+export const artworksQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
-    type: "Photograph",
+    type: ["Artwork"],
+    resolve: async (query, _parent, _args, _info) =>
+      await prisma.artwork.findMany({
+        ...query,
+        where: {
+          NOT: [
+            {
+              imageUrls: {
+                isEmpty: true,
+              },
+            },
+          ],
+        },
+      }),
+  })
+
+export const createArtworkMutationType = (t: TMutationFieldBuilder) =>
+  t.prismaField({
+    type: "Artwork",
     args: {
       title: t.arg.string({ required: true }),
       description: t.arg.string({ required: false }),
-      imageUrl: t.arg.string({ required: true }),
+      imageUrls: t.arg.stringList({ required: true }),
       category: t.arg.string({ required: true }),
     },
     resolve: async (query, _parent, args, ctx) => {
-      const { title, description, imageUrl, category } = args
+      const { title, description, imageUrls, category } = args
 
       // if (!(await ctx).user) {
       //   throw new Error("You have to be logged in to perform this action")
@@ -53,15 +74,17 @@ builder.mutationField("createPhotograph", (t) =>
       // if (!user || user.role !== "ADMIN") {
       //   throw new Error("You don have permission ot perform this action")
       // }
-      return await prisma.photograph.create({
+      if (!imageUrls.length) {
+        throw new Error("img urls required")
+      }
+      return await prisma.artwork.create({
         ...query,
         data: {
           title,
           description,
-          imageUrl,
+          imageUrls,
           category,
         },
       })
     },
   })
-)

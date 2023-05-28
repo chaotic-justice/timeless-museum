@@ -1,8 +1,8 @@
 import { writeFileSync } from "fs"
 import { lexicographicSortSchema, printSchema } from "graphql"
 import path from "path"
+import { artworkQueryType, artworksQueryType, createArtworkMutationType } from "./artwork"
 import { builder } from "./builder"
-import { photographsQueryType } from "./photograph"
 import {
   createDraftMutationType,
   deletePostMutationType,
@@ -15,11 +15,12 @@ import { signUpMutationType, usersQueryType } from "./user"
 
 builder.queryType({
   fields: (t) => ({
-    photographs: photographsQueryType(t),
-    users: usersQueryType(t),
-    post: postQueryType(t),
-    drafts: draftsQueryType(t),
-    filterPosts: filterPostsQueryType(t),
+    getArtworkById: artworkQueryType(t),
+    getArtworks: artworksQueryType(t),
+    getUsers: usersQueryType(t),
+    getPostById: postQueryType(t),
+    getDrafts: draftsQueryType(t),
+    filterPostsBy: filterPostsQueryType(t),
   }),
 })
 
@@ -31,6 +32,8 @@ builder.mutationType({
     createDraft: createDraftMutationType(t),
     deletePost: deletePostMutationType(t),
     publishDraft: publishDraftMutationType(t),
+    // art??
+    createArtwork: createArtworkMutationType(t),
   }),
 })
 

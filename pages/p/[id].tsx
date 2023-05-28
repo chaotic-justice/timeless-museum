@@ -1,12 +1,11 @@
 import { QueryClient, dehydrate, useMutation, useQuery } from "@tanstack/react-query"
 import request from "graphql-request"
-import { GetStaticPaths, GetStaticProps } from "next"
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next"
 import Router, { useRouter } from "next/router"
 import Layout from "../../components/Layout"
-import { PostFragment } from "../../components/Post"
-import { getPostDocument, publishDraftDocument } from "../../library/documents"
 import { useFragment } from "../../library/gql"
 import { PostItemFragment } from "../../library/gql/graphql"
+import { PostFragment, getPostById, publishDraftDocument } from "../../library/hooks"
 import prisma from "../../library/prisma"
 
 const Post = () => {
@@ -14,7 +13,7 @@ const Post = () => {
   const {
     query: { id },
   } = useRouter()
-  const { data } = useQuery({ queryKey: ["post", id], queryFn: () => GetPostById(id as string) })
+  const { data } = useQuery({ queryKey: ["post", id], queryFn: () => getPostById(id as string) })
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (postId: string) =>
@@ -57,7 +56,7 @@ const Post = () => {
     console.log("mutation loading")
   }
 
-  const post = useFragment(PostFragment, data?.post)
+  const post = useFragment(PostFragment, data?.getPostById)
   if (!post) return
 
   let title = post.title
@@ -120,9 +119,6 @@ const Post = () => {
   )
 }
 
-const GetPostById = async (postId: string) =>
-  await request("http://localhost:3000/api/graphql", getPostDocument, { id: postId })
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await prisma.post.findMany({})
   const paths = posts.map((post) => ({
@@ -140,7 +136,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
     queryKey: ["post", params?.id],
-    queryFn: () => GetPostById(params?.id as string),
+    queryFn: () => getPostById(params?.id as string),
     staleTime: 60 * 1000 * 15, // activate gc every 15mins
     // staleTime: 1500, // refresh the query every 15mins
   })

@@ -3,7 +3,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli"
 const config: CodegenConfig = {
   overwrite: true,
   schema: "./generated/schema.graphql",
-  documents: ["pages/**/*.tsx", "pages/*.tsx", "components/*.tsx", "library/documents/*.ts"],
+  documents: ["pages/**/*.tsx", "pages/*.tsx", "library/hooks/*.ts"],
   ignoreNoDocuments: true,
   generates: {
     "library/gql/": {

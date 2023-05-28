@@ -1,10 +1,9 @@
-import { QueryClient, dehydrate, useMutation } from "@tanstack/react-query"
-import request from "graphql-request"
-import { GetServerSideProps } from "next"
+import { useMutation } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import Layout from "../components/Layout"
-import { CreatePhotographDocument, CreatePhotographMutationVariables } from "../library/gql/graphql"
+import { CreateArtworkMutationVariables } from "../library/gql/graphql"
+import { createArtwork } from "../library/hooks"
 
 type FormValues = {
   title: string
@@ -13,7 +12,7 @@ type FormValues = {
   images: FileList
 }
 
-const Uploaded = (props) => {
+const Uploaded = () => {
   const {
     register,
     handleSubmit,
@@ -21,10 +20,7 @@ const Uploaded = (props) => {
   } = useForm<FormValues>()
 
   const { mutate, isSuccess } = useMutation({
-    mutationFn: async (createPhotographArgs: CreatePhotographMutationVariables) =>
-      await request("http://localhost:3000/api/graphql", CreatePhotographDocument, {
-        ...createPhotographArgs,
-      }),
+    mutationFn: async (args: CreateArtworkMutationVariables) => createArtwork(args),
   })
 
   // Upload photo function
@@ -59,7 +55,7 @@ const Uploaded = (props) => {
     const { title, category, description, images } = data
     console.log("images", images)
     const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${images[0]?.name}`
-    mutate({ title, category, description, imageUrl })
+    mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
   return (
@@ -120,15 +116,5 @@ const Uploaded = (props) => {
     </Layout>
   )
 }
-
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   const queryClient = new QueryClient()
-
-//   return {
-//     props: {
-//       dehyratedState: dehydrate(queryClient),
-//     },
-//   }
-// }
 
 export default Uploaded
