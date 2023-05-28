@@ -1,6 +1,6 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
 import request from "graphql-request"
-import { GetServerSideProps, InferGetServerSidePropsType } from "next"
+import { GetServerSideProps } from "next"
 import Layout from "../components/Layout"
 import Post, { PostFragment } from "../components/Post"
 import { graphql, useFragment } from "../library/gql"
@@ -13,22 +13,23 @@ const draftsQueryDocument = graphql(`
   }
 `)
 
-const getDrafts = async () => await request("http://localhost:3000/api/graphql", draftsQueryDocument)
+const getDrafts = async () => await request(process.env.NEXT_PUBLIC_GQL_API as string, draftsQueryDocument)
 
 const Drafts = () => {
   const { data } = useQuery({ queryKey: ["drafts"], queryFn: getDrafts })
-  if (!data) return
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const drafts = data?.drafts.map((d) => useFragment(PostFragment, d))
+  if (!drafts) return
 
   return (
     <Layout>
       <div className="page">
         <h1>Drafts</h1>
         <main>
-          {data.drafts.map((p) => {
-            const post = useFragment(PostFragment, p)
+          {drafts.map((draft) => {
             return (
-              <div key={post.id} className="post">
-                <Post post={post} />
+              <div key={draft.id} className="post">
+                <Post post={draft} />
               </div>
             )
           })}

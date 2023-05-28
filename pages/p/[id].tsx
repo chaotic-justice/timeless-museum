@@ -4,7 +4,7 @@ import { GetStaticPaths, GetStaticProps } from "next"
 import Router, { useRouter } from "next/router"
 import Layout from "../../components/Layout"
 import { PostFragment } from "../../components/Post"
-import { getPostDocument, publishDocument } from "../../library/documents"
+import { getPostDocument, publishDraftDocument } from "../../library/documents"
 import { useFragment } from "../../library/gql"
 import { PostItemFragment } from "../../library/gql/graphql"
 import prisma from "../../library/prisma"
@@ -18,7 +18,7 @@ const Post = () => {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (postId: string) =>
-      await request("http://localhost:3000/api/graphql", publishDocument, { id: postId }),
+      await request(process.env.NEXT_PUBLIC_GQL_API as string, publishDraftDocument, { id: postId }),
     // When mutate is called:
     onMutate: async (postId) => {
       // Cancel any outgoing refetches
@@ -57,10 +57,8 @@ const Post = () => {
     console.log("mutation loading")
   }
 
-  if (!data || !data.post) return
-  const { post: postFragment } = data
-
-  const post = useFragment(PostFragment, postFragment)
+  const post = useFragment(PostFragment, data?.post)
+  if (!post) return
 
   let title = post.title
   if (!post.published) {

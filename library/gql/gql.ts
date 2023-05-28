@@ -19,10 +19,10 @@ const documents = {
     types.CreatePhotographDocument,
   "\n  query GetPhotographs {\n    photographs {\n      id\n      title\n      description\n      category\n      createdAt\n      imageUrl\n    }\n  }\n":
     types.GetPhotographsDocument,
-  "\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n":
-    types.PublishMutationDocument,
-  "\n  mutation DeleteMutation($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n":
-    types.DeleteMutationDocument,
+  "\n  mutation PublishDraft($id: ID!) {\n    publishDraft(id: $id) {\n      ...PostItem\n    }\n  }\n":
+    types.PublishDraftDocument,
+  "\n  mutation DeletePost($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n":
+    types.DeletePostDocument,
   "\n  query GetPostById($id: ID!) {\n    post(id: $id) {\n      ...PostItem\n    }\n  }\n":
     types.GetPostByIdDocument,
   "\n  query GetDrafts {\n    drafts {\n      ...PostItem\n    }\n  }\n":
@@ -65,14 +65,14 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n"
-): (typeof documents)["\n  mutation PublishMutation($id: ID!) {\n    publish(id: $id) {\n      ...PostItem\n    }\n  }\n"];
+  source: "\n  mutation PublishDraft($id: ID!) {\n    publishDraft(id: $id) {\n      ...PostItem\n    }\n  }\n"
+): (typeof documents)["\n  mutation PublishDraft($id: ID!) {\n    publishDraft(id: $id) {\n      ...PostItem\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  mutation DeleteMutation($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n"
-): (typeof documents)["\n  mutation DeleteMutation($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n"];
+  source: "\n  mutation DeletePost($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n"
+): (typeof documents)["\n  mutation DeletePost($id: ID!) {\n    deletePost(id: $id) {\n      ...PostItem\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

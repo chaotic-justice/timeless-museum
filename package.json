@@ -9,6 +9,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "lint": "next lint",
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
@@ -20,6 +21,8 @@
     "@tanstack/react-query": "^4.29.7",
     "@tanstack/react-query-devtools": "^4.29.7",
     "aws-sdk": "^2.1377.0",
+    "eslint": "^8.41.0",
+    "eslint-config-next": "^13.4.4",
     "flowbite": "^1.6.5",
     "flowbite-react": "^0.4.4",
     "graphql": "16.6.0",

@@ -1,15 +1,15 @@
 import { graphql } from "../gql"
 
-export const publishDocument = graphql(`
-  mutation PublishMutation($id: ID!) {
-    publish(id: $id) {
+export const publishDraftDocument = graphql(`
+  mutation PublishDraft($id: ID!) {
+    publishDraft(id: $id) {
       ...PostItem
     }
   }
 `)
 
-export const DeleteMutation = graphql(`
-  mutation DeleteMutation($id: ID!) {
+export const DeletePostDocument = graphql(`
+  mutation DeletePost($id: ID!) {
     deletePost(id: $id) {
       ...PostItem
     }
