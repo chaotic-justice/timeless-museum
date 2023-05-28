@@ -22,25 +22,35 @@ export type Scalars = {
   Date: any;
 };
 
+export type Artwork = {
+  __typename?: "Artwork";
+  category: Scalars["String"];
+  createdAt: Scalars["Date"];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  imageUrls: Array<Scalars["String"]>;
+  title: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
+  createArtwork: Artwork;
   createDraft: Post;
-  createPhotograph: Photograph;
   deletePost: Post;
   publishDraft: Post;
   signUp: User;
 };
 
-export type MutationCreateDraftArgs = {
-  authorEmail: Scalars["String"];
-  content?: InputMaybe<Scalars["String"]>;
+export type MutationCreateArtworkArgs = {
+  category: Scalars["String"];
+  description?: InputMaybe<Scalars["String"]>;
+  imageUrls: Array<Scalars["String"]>;
   title: Scalars["String"];
 };
 
-export type MutationCreatePhotographArgs = {
-  category: Scalars["String"];
-  description?: InputMaybe<Scalars["String"]>;
-  imageUrl: Scalars["String"];
+export type MutationCreateDraftArgs = {
+  authorEmail: Scalars["String"];
+  content?: InputMaybe<Scalars["String"]>;
   title: Scalars["String"];
 };
 
@@ -57,16 +67,6 @@ export type MutationSignUpArgs = {
   name?: InputMaybe<Scalars["String"]>;
 };
 
-export type Photograph = {
-  __typename?: "Photograph";
-  category: Scalars["String"];
-  createdAt: Scalars["Date"];
-  description?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  imageUrl: Scalars["String"];
-  title: Scalars["String"];
-};
-
 export type Post = {
   __typename?: "Post";
   author: User;
@@ -78,18 +78,23 @@ export type Post = {
 
 export type Query = {
   __typename?: "Query";
-  drafts: Array<Post>;
-  filterPosts: Array<Post>;
-  photographs: Array<Photograph>;
-  post?: Maybe<Post>;
-  users: Array<User>;
+  filterPostsBy: Array<Post>;
+  getArtworkById?: Maybe<Artwork>;
+  getArtworks: Array<Artwork>;
+  getDrafts: Array<Post>;
+  getPostById?: Maybe<Post>;
+  getUsers: Array<User>;
 };
 
-export type QueryFilterPostsArgs = {
+export type QueryFilterPostsByArgs = {
   searchString?: InputMaybe<Scalars["String"]>;
 };
 
-export type QueryPostArgs = {
+export type QueryGetArtworkByIdArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryGetPostByIdArgs = {
   id: Scalars["ID"];
 };
 
@@ -107,6 +112,57 @@ export type User = {
   role: Role;
 };
 
+export type CreateArtworkMutationVariables = Exact<{
+  title: Scalars["String"];
+  imageUrls: Array<Scalars["String"]> | Scalars["String"];
+  category: Scalars["String"];
+  description?: InputMaybe<Scalars["String"]>;
+}>;
+
+export type CreateArtworkMutation = {
+  __typename?: "Mutation";
+  createArtwork: {
+    __typename?: "Artwork";
+    title: string;
+    createdAt: any;
+    imageUrls: Array<string>;
+    category: string;
+    description?: string | null;
+  };
+};
+
+export type GetArtworksQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetArtworksQuery = {
+  __typename?: "Query";
+  getArtworks: Array<{
+    __typename?: "Artwork";
+    id: string;
+    title: string;
+    description?: string | null;
+    category: string;
+    createdAt: any;
+    imageUrls: Array<string>;
+  }>;
+};
+
+export type GetArtworkByIdQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetArtworkByIdQuery = {
+  __typename?: "Query";
+  getArtworkById?: {
+    __typename?: "Artwork";
+    id: string;
+    title: string;
+    description?: string | null;
+    category: string;
+    imageUrls: Array<string>;
+    createdAt: any;
+  } | null;
+};
+
 export type PostItemFragment = {
   __typename?: "Post";
   id: string;
@@ -115,40 +171,6 @@ export type PostItemFragment = {
   published: boolean;
   author: { __typename?: "User"; id: string; name?: string | null };
 } & { " $fragmentName"?: "PostItemFragment" };
-
-export type CreatePhotographMutationVariables = Exact<{
-  title: Scalars["String"];
-  imageUrl: Scalars["String"];
-  category: Scalars["String"];
-  description?: InputMaybe<Scalars["String"]>;
-}>;
-
-export type CreatePhotographMutation = {
-  __typename?: "Mutation";
-  createPhotograph: {
-    __typename?: "Photograph";
-    title: string;
-    createdAt: any;
-    imageUrl: string;
-    category: string;
-    description?: string | null;
-  };
-};
-
-export type GetPhotographsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetPhotographsQuery = {
-  __typename?: "Query";
-  photographs: Array<{
-    __typename?: "Photograph";
-    id: string;
-    title: string;
-    description?: string | null;
-    category: string;
-    createdAt: any;
-    imageUrl: string;
-  }>;
-};
 
 export type PublishDraftMutationVariables = Exact<{
   id: Scalars["ID"];
@@ -178,7 +200,7 @@ export type GetPostByIdQueryVariables = Exact<{
 
 export type GetPostByIdQuery = {
   __typename?: "Query";
-  post?:
+  getPostById?:
     | ({ __typename?: "Post" } & {
         " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
       })
@@ -189,7 +211,7 @@ export type GetDraftsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetDraftsQuery = {
   __typename?: "Query";
-  drafts: Array<
+  getDrafts: Array<
     { __typename?: "Post" } & {
       " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
     }
@@ -229,13 +251,13 @@ export const PostItemFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<PostItemFragment, unknown>;
-export const CreatePhotographDocument = {
+export const CreateArtworkDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "mutation",
-      name: { kind: "Name", value: "CreatePhotograph" },
+      name: { kind: "Name", value: "CreateArtwork" },
       variableDefinitions: [
         {
           kind: "VariableDefinition",
@@ -255,13 +277,19 @@ export const CreatePhotographDocument = {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "imageUrl" },
+            name: { kind: "Name", value: "imageUrls" },
           },
           type: {
             kind: "NonNullType",
             type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              kind: "ListType",
+              type: {
+                kind: "NonNullType",
+                type: {
+                  kind: "NamedType",
+                  name: { kind: "Name", value: "String" },
+                },
+              },
             },
           },
         },
@@ -293,7 +321,7 @@ export const CreatePhotographDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "createPhotograph" },
+            name: { kind: "Name", value: "createArtwork" },
             arguments: [
               {
                 kind: "Argument",
@@ -305,10 +333,10 @@ export const CreatePhotographDocument = {
               },
               {
                 kind: "Argument",
-                name: { kind: "Name", value: "imageUrl" },
+                name: { kind: "Name", value: "imageUrls" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "imageUrl" },
+                  name: { kind: "Name", value: "imageUrls" },
                 },
               },
               {
@@ -333,7 +361,7 @@ export const CreatePhotographDocument = {
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "title" } },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "imageUrl" } },
+                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
                 { kind: "Field", name: { kind: "Name", value: "category" } },
                 { kind: "Field", name: { kind: "Name", value: "description" } },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
@@ -345,22 +373,22 @@ export const CreatePhotographDocument = {
     },
   ],
 } as unknown as DocumentNode<
-  CreatePhotographMutation,
-  CreatePhotographMutationVariables
+  CreateArtworkMutation,
+  CreateArtworkMutationVariables
 >;
-export const GetPhotographsDocument = {
+export const GetArtworksDocument = {
   kind: "Document",
   definitions: [
     {
       kind: "OperationDefinition",
       operation: "query",
-      name: { kind: "Name", value: "GetPhotographs" },
+      name: { kind: "Name", value: "GetArtworks" },
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "photographs" },
+            name: { kind: "Name", value: "getArtworks" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
@@ -369,7 +397,7 @@ export const GetPhotographsDocument = {
                 { kind: "Field", name: { kind: "Name", value: "description" } },
                 { kind: "Field", name: { kind: "Name", value: "category" } },
                 { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "imageUrl" } },
+                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
               ],
             },
           },
@@ -377,7 +405,57 @@ export const GetPhotographsDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<GetPhotographsQuery, GetPhotographsQueryVariables>;
+} as unknown as DocumentNode<GetArtworksQuery, GetArtworksQueryVariables>;
+export const GetArtworkByIdDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "GetArtworkById" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "getArtworkById" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "title" } },
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "category" } },
+                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetArtworkByIdQuery, GetArtworkByIdQueryVariables>;
 export const PublishDraftDocument = {
   kind: "Document",
   definitions: [
@@ -555,7 +633,7 @@ export const GetPostByIdDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "post" },
+            name: { kind: "Name", value: "getPostById" },
             arguments: [
               {
                 kind: "Argument",
@@ -621,7 +699,7 @@ export const GetDraftsDocument = {
         selections: [
           {
             kind: "Field",
-            name: { kind: "Name", value: "drafts" },
+            name: { kind: "Name", value: "getDrafts" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [

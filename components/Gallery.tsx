@@ -1,26 +1,42 @@
 import Image from "next/image"
-import { Alert, Card } from "flowbite-react"
-import { Photograph } from "../library/gql/graphql"
+import { Artwork } from "../library/gql/graphql"
+import { useRouter } from "next/router"
 
-const ImageWithDimensions = ({ photo }: { photo: Photograph }) => {
+const ImageWithDimensions = ({ artwork }: { artwork: Artwork }) => {
+  const router = useRouter()
+  const displayArt = (id: String) => {
+    router.push(`/artpiece/${id}`)
+  }
+
   return (
-    <div className="max-w-sm">
-      <Card imgSrc={photo.imageUrl} className="max-h-full">
-        <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">{photo.title}</h5>
-        <p className="font-normal text-gray-700 dark:text-gray-400">{photo.description}</p>
-      </Card>
+    <div
+      key={artwork.id}
+      className="bg-white shadow-lg rounded-lg overflow-hidden transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+    >
+      <Image
+        className="w-full h-48 object-cover object-center"
+        height={240}
+        width={300}
+        src={artwork.imageUrls[0]}
+        alt={artwork.description ?? "alt"}
+        onClick={() => displayArt(artwork.id)}
+      />
+      <div className="p-4">
+        <h2 className="text-gray-900 font-bold text-2xl mb-2">{artwork.title}</h2>
+        <p className="text-gray-800 text-base">{artwork.description}</p>
+      </div>
     </div>
   )
 }
 
-const Gallery: React.FC<{ images: Photograph[] }> = ({ images }) => {
+const Gallery: React.FC<{ artworks: Artwork[] }> = ({ artworks }) => {
   return (
-    <div className="container mx-auto px-5 py-2 lg:px-32 lg:pt-12">
-      <Alert color="info">Alert!</Alert>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {images.map((img) => {
-          return <ImageWithDimensions key={img.id} photo={img} />
-        })}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl text-center mb-8">Digital Gallery</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {artworks.map((artwork) => (
+          <ImageWithDimensions key={artwork.id} artwork={artwork} />
+        ))}
       </div>
     </div>
   )

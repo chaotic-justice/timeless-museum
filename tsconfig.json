@@ -18,6 +18,7 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
+    "noUnusedParameters": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,

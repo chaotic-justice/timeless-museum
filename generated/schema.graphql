@@ -1,23 +1,23 @@
+type Artwork {
+  category: String!
+  createdAt: Date!
+  description: String
+  id: ID!
+  imageUrls: [String!]!
+  title: String!
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
 
 type Mutation {
+  createArtwork(category: String!, description: String, imageUrls: [String!]!, title: String!): Artwork!
   createDraft(authorEmail: String!, content: String, title: String!): Post!
-  createPhotograph(category: String!, description: String, imageUrl: String!, title: String!): Photograph!
   deletePost(id: ID!): Post!
   publishDraft(id: ID!): Post!
   signUp(email: String!, name: String): User!
-}
-
-type Photograph {
-  category: String!
-  createdAt: Date!
-  description: String
-  id: ID!
-  imageUrl: String!
-  title: String!
 }
 
 type Post {
@@ -29,11 +29,12 @@ type Post {
 }
 
 type Query {
-  drafts: [Post!]!
-  filterPosts(searchString: String): [Post!]!
-  photographs: [Photograph!]!
-  post(id: ID!): Post
-  users: [User!]!
+  filterPostsBy(searchString: String): [Post!]!
+  getArtworkById(id: ID!): Artwork
+  getArtworks: [Artwork!]!
+  getDrafts: [Post!]!
+  getPostById(id: ID!): Post
+  getUsers: [User!]!
 }
 
 enum Role {
