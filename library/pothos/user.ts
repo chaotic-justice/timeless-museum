@@ -1,5 +1,5 @@
 import prisma from "../prisma"
-import { TField, builder } from "./builder"
+import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
 
 export enum Role {
   USER = "user",
@@ -23,7 +23,7 @@ builder.prismaObject("User", {
   }),
 })
 
-export const usersQueryType = (t: TField) =>
+export const usersQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
     type: ["User"],
     resolve: async (query, _parent, _args, _info) =>
@@ -32,6 +32,23 @@ export const usersQueryType = (t: TField) =>
           email: {
             not: "",
           },
+        },
+      }),
+  })
+
+export const signUpMutationType = (t: TMutationFieldBuilder) =>
+  t.prismaField({
+    type: "User",
+    args: {
+      name: t.arg.string({ required: false }),
+      email: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      await prisma.user.create({
+        ...query,
+        data: {
+          email: args.email,
+          name: args.name,
         },
       }),
   })

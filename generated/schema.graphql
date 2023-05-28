@@ -7,8 +7,8 @@ type Mutation {
   createDraft(authorEmail: String!, content: String, title: String!): Post!
   createPhotograph(category: String!, description: String, imageUrl: String!, title: String!): Photograph!
   deletePost(id: ID!): Post!
-  publish(id: ID!): Post!
-  signupUser(email: String!, name: String): User!
+  publishDraft(id: ID!): Post!
+  signUp(email: String!, name: String): User!
 }
 
 type Photograph {

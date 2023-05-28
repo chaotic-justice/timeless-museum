@@ -1,5 +1,5 @@
 import prisma from "../prisma"
-import { TField, builder } from "./builder"
+import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
 
 builder.prismaObject("Post", {
   fields: (t) => ({
@@ -11,7 +11,9 @@ builder.prismaObject("Post", {
   }),
 })
 
-export const postQueryType = (t: TField) =>
+/* query types */
+
+export const postQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
     type: "Post",
     args: {
@@ -19,10 +21,95 @@ export const postQueryType = (t: TField) =>
     },
     nullable: true,
     resolve: async (query, _parent, args, _info) =>
-      prisma.post.findUnique({
+      await prisma.post.findUnique({
         ...query,
         where: {
           id: Number(args.id),
+        },
+      }),
+  })
+
+export const draftsQueryType = (t: TQueryFieldBuilder) =>
+  t.prismaField({
+    type: ["Post"],
+    resolve: async (query, _parent, _args, _info) =>
+      await prisma.post.findMany({
+        ...query,
+        where: { published: false },
+      }),
+  })
+
+export const filterPostsQueryType = (t: TQueryFieldBuilder) =>
+  t.prismaField({
+    type: ["Post"],
+    args: {
+      searchString: t.arg.string({ required: false }),
+    },
+    resolve: async (query, _parent, args, _info) => {
+      const or = args.searchString
+        ? {
+            OR: [{ title: { contains: args.searchString } }, { content: { contains: args.searchString } }],
+          }
+        : {}
+      return await prisma.post.findMany({
+        ...query,
+        where: { ...or },
+      })
+    },
+  })
+
+/* mutation types */
+
+export const createDraftMutationType = (t: TMutationFieldBuilder) =>
+  t.prismaField({
+    type: "Post",
+    args: {
+      title: t.arg.string({ required: true }),
+      content: t.arg.string(),
+      authorEmail: t.arg.string({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      prisma.post.create({
+        ...query,
+        data: {
+          title: args.title,
+          content: args.content,
+          author: {
+            connect: { email: args.authorEmail },
+          },
+        },
+      }),
+  })
+
+export const deletePostMutationType = (t: TMutationFieldBuilder) =>
+  t.prismaField({
+    type: "Post",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      await prisma.post.delete({
+        ...query,
+        where: {
+          id: Number(args.id),
+        },
+      }),
+  })
+
+export const publishDraftMutationType = (t: TMutationFieldBuilder) =>
+  t.prismaField({
+    type: "Post",
+    args: {
+      id: t.arg.id({ required: true }),
+    },
+    resolve: async (query, _parent, args, _info) =>
+      await prisma.post.update({
+        ...query,
+        where: {
+          id: Number(args.id),
+        },
+        data: {
+          published: true,
         },
       }),
   })
