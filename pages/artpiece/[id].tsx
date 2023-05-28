@@ -1,15 +1,12 @@
-import { FC } from "react"
-import Image from "next/image"
-import { Artwork } from "../../library/gql/graphql"
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
 import { GetStaticPaths, GetStaticProps } from "next"
-import { getArtworkById, getPostById } from "../../library/hooks"
-import prisma from "../../library/prisma"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import Layout from "../../components/Layout"
+import { getArtworkById } from "../../library/hooks"
+import prisma from "../../library/prisma"
 
 const ArtPiece = () => {
-  const queryClient = new QueryClient()
   const {
     query: { id },
   } = useRouter()

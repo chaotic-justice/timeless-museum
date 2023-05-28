@@ -1,4 +1,3 @@
-import { Artwork } from "@prisma/client"
 import prisma from "../prisma"
 import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
 
