@@ -17,7 +17,7 @@ const Post = () => {
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (postId: string) =>
-      await request(process.env.NEXT_PUBLIC_GQL_API as string, publishDraftDocument, { id: postId }),
+      await request(process.env.NEXT_PUBLIC_GQL_API, publishDraftDocument, { id: postId }),
     // When mutate is called:
     onMutate: async (postId) => {
       // Cancel any outgoing refetches
