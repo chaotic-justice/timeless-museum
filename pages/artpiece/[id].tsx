@@ -19,6 +19,7 @@ const ArtPiece = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-4">{artwork.title}</h1>
         <Image
+          priority
           height={490}
           width={800}
           className="w-full mb-4"

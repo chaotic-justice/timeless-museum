@@ -19,6 +19,9 @@ export default createYoga<{
   // },
   schema,
   graphqlEndpoint: "/api/graphql",
+  // TODO: add auth context
+  // https://the-guild.dev/graphql/yoga-server/tutorial/advanced/01-authentication
+  // OR => gql-shielf
 })
 
 export const config = {

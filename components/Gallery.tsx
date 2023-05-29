@@ -14,7 +14,8 @@ const ImageWithDimensions = ({ artwork }: { artwork: Artwork }) => {
       className="bg-white shadow-lg rounded-lg overflow-hidden transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-105"
     >
       <Image
-        className="w-full h-48 object-cover object-center"
+        priority
+        className="w-auto h-auto object-cover object-center"
         height={240}
         width={300}
         src={artwork.imageUrls[0]}

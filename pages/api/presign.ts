@@ -1,8 +1,17 @@
 import aws from "aws-sdk"
 import type { NextApiRequest, NextApiResponse } from "next"
+import { getToken } from "next-auth/jwt"
 
 // migrate this to v3
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const token = await getToken({ req })
+  if (!token || !token.admin) {
+    console.log("JSON Web Token", JSON.stringify(token, null, 2))
+    console.log("admin procedure")
+    return res.status(401).json({
+      data: null,
+    })
+  }
   try {
     // 1.
     const s3 = new aws.S3({
