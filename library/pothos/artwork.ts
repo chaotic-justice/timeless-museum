@@ -1,5 +1,9 @@
 import prisma from "../prisma"
+<<<<<<< HEAD:library/pothos/artwork.ts
 import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
+=======
+import { TQueryFieldBuilder, builder } from "./builder"
+>>>>>>> 1f15e9f (modulized pothos schema part 2):library/pothos/photograph.ts
 
 builder.prismaObject("Artwork", {
   fields: (t) => ({
@@ -14,7 +18,11 @@ builder.prismaObject("Artwork", {
   }),
 })
 
+<<<<<<< HEAD:library/pothos/artwork.ts
 export const artworkQueryType = (t: TQueryFieldBuilder) =>
+=======
+export const photographsQueryType = (t: TQueryFieldBuilder) =>
+>>>>>>> 1f15e9f (modulized pothos schema part 2):library/pothos/photograph.ts
   t.prismaField({
     type: "Artwork",
     args: {

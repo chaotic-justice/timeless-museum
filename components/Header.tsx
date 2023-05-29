@@ -5,7 +5,6 @@ import adminUsers from "../library/admins"
 
 const Header = () => {
   const { data: session, status } = useSession()
-  console.log("session", session)
   const isAdmin = session && adminUsers.includes(session.user?.email!)
   const router = useRouter()
 

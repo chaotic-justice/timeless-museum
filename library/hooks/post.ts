@@ -47,6 +47,6 @@ const draftsQueryDocument = graphql(`
 `)
 
 export const getPostById = async (postId: string) =>
-  await request(process.env.NEXT_PUBLIC_GQL_API as string, getPostDocument, { id: postId })
+  await request(process.env.NEXT_PUBLIC_GQL_API, getPostDocument, { id: postId })
 
-export const getDrafts = async () => await request(process.env.NEXT_PUBLIC_GQL_API as string, draftsQueryDocument)
+export const getDrafts = async () => await request(process.env.NEXT_PUBLIC_GQL_API, draftsQueryDocument)

@@ -1,4 +1,4 @@
-# Fullstack Example with Next.js (GraphQL API)
+# Timeless Museum
 
 This example shows how to implement a **Fullstack NextJs app with GraphQL** with the following stack:
 
@@ -15,56 +15,29 @@ This example shows how to implement a **fullstack app in TypeScript with :
 
 ### 1. Download example and install dependencies
 
-Download this example:
-
+```sh
+yarn
 ```
-npx try-prisma@latest --template typescript/graphql-nextjs
-```
-
-Install npm dependencies:
-
-```
-cd graphql-nextjs
-npm install
-```
-
-<details><summary><strong>Alternative:</strong> Clone the entire repo</summary>
-
-Clone this repository:
-
-```
-git clone git@github.com:prisma/prisma-examples.git --depth=1
-```
-
-Install npm dependencies:
-
-```
-cd prisma-examples/typescript/graphql-nextjs
-npm install
-```
-
-</details>
 
 ### 2. Create and seed the database
 
 Run the following command to create your SQLite database file. This also creates the `User` and `Post` tables that are defined in [`prisma/schema.prisma`](./prisma/schema.prisma):
 
-```
+```sh
 npx prisma migrate dev --name init
 ```
 
 When `npx prisma migrate dev` is executed against a newly created database, seeding is also triggered. The seed file in [`prisma/seed.ts`](./prisma/seed.ts) will be executed and your database will be populated with the sample data.
 
-
 ### 2. Start the app
 
-```
-npm run dev
+```sh
+yarn dev
 ```
 
 The app is now running, navigate to [`http://localhost:3000/`](http://localhost:3000/) in your browser to explore its UI.
 
-<details><summary>Expand for a tour through the UI of the app</summary>
+<details><summary>Expand for a tour through the UI of the app</summary></details>
 
 <br />
 
@@ -205,7 +178,6 @@ mutation {
 > **Note**: You need to replace the `__POST_ID__`-placeholder with an actual `id` from a `Post` item. You can find one e.g. using the `filterPosts`-query.
 
 </Details>
-
 
 ## Evolving the app
 

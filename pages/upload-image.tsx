@@ -30,7 +30,6 @@ const Uploaded = () => {
     const filename = encodeURIComponent(file.name)
     const res = await fetch(`/api/presign?file=${filename}`)
     const data = await res.json()
-    console.log("data", data)
     const formData = new FormData()
 
     Object.entries({ ...data.fields, file }).forEach(([key, value]) => {
@@ -39,6 +38,7 @@ const Uploaded = () => {
     })
 
     toast.promise(
+      // TODO: convert this fetch block to an api
       fetch(data.url, {
         method: "POST",
         body: formData,
@@ -53,7 +53,6 @@ const Uploaded = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const { title, category, description, images } = data
-    console.log("images", images)
     const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${images[0]?.name}`
     mutate({ title, category, description, imageUrls: [imageUrl] })
   }

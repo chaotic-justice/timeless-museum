@@ -42,11 +42,11 @@ const getArtworkDocument = graphql(`
 `)
 
 export const getArtworkById = async (artworkId: string) =>
-  await request(process.env.NEXT_PUBLIC_GQL_API as string, getArtworkDocument, { id: artworkId })
+  await request(process.env.NEXT_PUBLIC_GQL_API, getArtworkDocument, { id: artworkId })
 
-export const getArtworks = async () => await request(process.env.NEXT_PUBLIC_GQL_API as string, getArtworksDocument)
+export const getArtworks = async () => await request(process.env.NEXT_PUBLIC_GQL_API, getArtworksDocument)
 
 export const createArtwork = async (args: MutationCreateArtworkArgs) =>
-  await request(process.env.NEXT_PUBLIC_GQL_API as string, createArtworkDocument, {
+  await request(process.env.NEXT_PUBLIC_GQL_API, createArtworkDocument, {
     ...args,
   })

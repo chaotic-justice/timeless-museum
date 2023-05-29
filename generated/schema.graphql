@@ -18,6 +18,18 @@ type Mutation {
   deletePost(id: ID!): Post!
   publishDraft(id: ID!): Post!
   signUp(email: String!, name: String): User!
+<<<<<<< HEAD
+=======
+}
+
+type Photograph {
+  category: String!
+  createdAt: Date!
+  description: String
+  id: ID!
+  imageUrl: String!
+  title: String!
+>>>>>>> 1f15e9f (modulized pothos schema part 2)
 }
 
 type Post {
