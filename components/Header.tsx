@@ -1,9 +1,12 @@
 import Link from "next/link"
 import { signIn, signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
+import adminUsers from "../library/admins"
 
 const Header = () => {
   const { data: session, status } = useSession()
+  console.log("session", session)
+  const isAdmin = session && adminUsers.includes(session.user?.email!)
   const router = useRouter()
 
   function isActive(pathname: string) {
@@ -30,9 +33,11 @@ const Header = () => {
         ) : (
           <button onClick={() => signIn()}>login</button>
         )}
-        <Link href="/upload-image" legacyBehavior>
-          <a data-active={isActive("/upload-image")}>+ upload photo</a>
-        </Link>
+        {isAdmin && (
+          <Link href="/upload-image" legacyBehavior>
+            <a data-active={isActive("/upload-image")}>+ upload photo</a>
+          </Link>
+        )}
       </div>
       <style jsx>{`
         nav {

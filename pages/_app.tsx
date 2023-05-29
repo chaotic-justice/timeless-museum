@@ -4,8 +4,9 @@ import { useState } from "react"
 import "../styles/index.css"
 import { SessionProvider } from "next-auth/react"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { isDevEnvironment } from "../library/utils"
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
   return (
     <QueryClientProvider client={queryClient}>
@@ -14,7 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Component {...pageProps} />
         </SessionProvider>
       </Hydrate>
-      <ReactQueryDevtools />
+      {isDevEnvironment && <ReactQueryDevtools />}
     </QueryClientProvider>
   )
 }

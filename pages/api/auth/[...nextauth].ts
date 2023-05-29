@@ -36,10 +36,11 @@ const options: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token }) {
-      token.role = adminUsers.includes(token.email!) ? "admin" : "user"
+      token.admin = adminUsers.includes(token.email!)
       return token
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
 }
 // #pass='KauD0=s@'
+// TODO: lookup how to implement Component.auth?
