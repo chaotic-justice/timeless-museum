@@ -1,6 +1,7 @@
+/* eslint-disable react/no-unknown-property */
 import { QueryClient, dehydrate, useMutation, useQuery } from "@tanstack/react-query"
 import request from "graphql-request"
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next"
+import { GetStaticPaths, GetStaticProps } from "next"
 import Router, { useRouter } from "next/router"
 import Layout from "../../components/Layout"
 import { useFragment } from "../../library/gql"
@@ -73,7 +74,7 @@ const Post = () => {
         <p>{post.content}</p>
         {!post.published && (
           <button
-            onClick={(e) => {
+            onClick={() => {
               mutate(post.id)
               Router.push("/")
             }}
@@ -82,7 +83,7 @@ const Post = () => {
           </button>
         )}
         <button
-          onClick={async (e) => {
+          onClick={async () => {
             // await deletePost({
             //   variables: {
             //     id,

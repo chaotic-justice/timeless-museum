@@ -29,7 +29,7 @@ export const photographsQueryType = (t: TQueryFieldBuilder) =>
       id: t.arg.id({ required: true }),
     },
     nullable: true,
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       await prisma.artwork.findUnique({
         ...query,
         where: {
@@ -65,7 +65,7 @@ export const createArtworkMutationType = (t: TMutationFieldBuilder) =>
       imageUrls: t.arg.stringList({ required: true }),
       category: t.arg.string({ required: true }),
     },
-    resolve: async (query, _parent, args, _ctx) => {
+    resolve: async (query, _parent, args) => {
       const { title, description, imageUrls, category } = args
 
       // if (!(await ctx).user) {

@@ -26,7 +26,7 @@ export type TQueryFieldBuilder = PothosSchemaTypes.QueryFieldBuilder<
     }
     PrismaTypes: PrismaTypes
   }>,
-  {}
+  object
 >
 
 export type TMutationFieldBuilder = PothosSchemaTypes.MutationFieldBuilder<
@@ -39,7 +39,7 @@ export type TMutationFieldBuilder = PothosSchemaTypes.MutationFieldBuilder<
     }
     PrismaTypes: PrismaTypes
   }>,
-  {}
+  object
 >
 
 builder.addScalarType("Date", DateResolver, {})

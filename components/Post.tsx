@@ -1,6 +1,6 @@
+/* eslint-disable react/no-unknown-property */
 import Router from "next/router"
 import ReactMarkdown from "react-markdown"
-import { graphql } from "../library/gql"
 import { PostItemFragment } from "../library/gql/graphql"
 
 const Post = (props: { post: PostItemFragment }) => {

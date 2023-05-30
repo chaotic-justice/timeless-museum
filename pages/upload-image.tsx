@@ -1,9 +1,11 @@
+import React from "react"
 import { useMutation } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import Layout from "../components/Layout"
 import { MutationCreateArtworkArgs } from "../library/gql/graphql"
 import { createArtwork } from "../library/hooks"
+import { useRouter } from "next/router"
 
 type FormValues = {
   title: string
@@ -13,14 +15,18 @@ type FormValues = {
 }
 
 const Uploaded = () => {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>()
 
-  const { mutate, isSuccess } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
+    onSuccess: () => {
+      router.push("/")
+    },
   })
 
   // Upload photo function
@@ -111,6 +117,7 @@ const Uploaded = () => {
             <span>add image</span>
           </button>
         </form>
+        <h3> {errors.description && errors.description.message}</h3>
       </div>
     </Layout>
   )

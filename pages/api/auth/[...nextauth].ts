@@ -36,6 +36,7 @@ const options: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token }) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       token.admin = adminUsers.includes(token.email!)
       return token
     },

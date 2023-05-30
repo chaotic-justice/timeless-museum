@@ -6,7 +6,7 @@ import { SessionProvider } from "next-auth/react"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { isDevEnvironment } from "../library/utils"
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function MyApp({ Component, pageProps: { ...pageProps } }: AppProps) {
   const [queryClient] = useState(() => new QueryClient())
   return (
     <QueryClientProvider client={queryClient}>

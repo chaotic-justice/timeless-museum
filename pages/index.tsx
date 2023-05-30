@@ -1,5 +1,5 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticProps, InferGetStaticPropsType } from "next"
+import { GetStaticProps } from "next"
 import Gallery from "../components/Gallery"
 import Layout from "../components/Layout"
 import { getArtworks } from "../library/hooks"

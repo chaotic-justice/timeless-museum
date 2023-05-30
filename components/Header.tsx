@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import Link from "next/link"
 import { signIn, signOut, useSession } from "next-auth/react"
 import { useRouter } from "next/router"
@@ -5,7 +6,7 @@ import adminUsers from "../library/admins"
 
 const Header = () => {
   const { data: session, status } = useSession()
-  const isAdmin = session && adminUsers.includes(session.user?.email!)
+  const isAdmin = session && session.user?.email && adminUsers.includes(session.user?.email)
   const router = useRouter()
 
   function isActive(pathname: string) {
