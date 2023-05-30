@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import Layout from "../components/Layout"
-import { CreateArtworkMutationVariables } from "../library/gql/graphql"
+import { MutationCreateArtworkArgs } from "../library/gql/graphql"
 import { createArtwork } from "../library/hooks"
 
 type FormValues = {
@@ -20,7 +20,7 @@ const Uploaded = () => {
   } = useForm<FormValues>()
 
   const { mutate, isSuccess } = useMutation({
-    mutationFn: async (args: CreateArtworkMutationVariables) => createArtwork(args),
+    mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
   })
 
   // Upload photo function
