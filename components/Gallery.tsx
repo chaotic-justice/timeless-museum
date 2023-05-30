@@ -15,7 +15,7 @@ const ImageWithDimensions = ({ artwork }: { artwork: Artwork }) => {
     >
       <Image
         priority
-        className="w-auto h-auto object-cover object-center"
+        className="w-full h-auto object-cover object-center"
         height={240}
         width={300}
         src={artwork.imageUrls[0]}
