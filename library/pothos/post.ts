@@ -20,7 +20,7 @@ export const postQueryType = (t: TQueryFieldBuilder) =>
       id: t.arg.id({ required: true }),
     },
     nullable: true,
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       await prisma.post.findUnique({
         ...query,
         where: {
@@ -32,7 +32,7 @@ export const postQueryType = (t: TQueryFieldBuilder) =>
 export const draftsQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
     type: ["Post"],
-    resolve: async (query, _parent, _args, _info) =>
+    resolve: async (query) =>
       await prisma.post.findMany({
         ...query,
         where: { published: false },
@@ -45,7 +45,7 @@ export const filterPostsQueryType = (t: TQueryFieldBuilder) =>
     args: {
       searchString: t.arg.string({ required: false }),
     },
-    resolve: async (query, _parent, args, _info) => {
+    resolve: async (query, _parent, args) => {
       const or = args.searchString
         ? {
             OR: [{ title: { contains: args.searchString } }, { content: { contains: args.searchString } }],
@@ -68,7 +68,7 @@ export const createDraftMutationType = (t: TMutationFieldBuilder) =>
       content: t.arg.string(),
       authorEmail: t.arg.string({ required: true }),
     },
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       prisma.post.create({
         ...query,
         data: {
@@ -87,7 +87,7 @@ export const deletePostMutationType = (t: TMutationFieldBuilder) =>
     args: {
       id: t.arg.id({ required: true }),
     },
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       await prisma.post.delete({
         ...query,
         where: {
@@ -102,7 +102,7 @@ export const publishDraftMutationType = (t: TMutationFieldBuilder) =>
     args: {
       id: t.arg.id({ required: true }),
     },
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       await prisma.post.update({
         ...query,
         where: {

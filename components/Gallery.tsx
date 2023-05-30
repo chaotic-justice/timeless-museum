@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 
 const ImageWithDimensions = ({ artwork }: { artwork: Artwork }) => {
   const router = useRouter()
-  const displayArt = (id: String) => {
+  const displayArt = (id: string) => {
     router.push(`/artpiece/${id}`)
   }
 

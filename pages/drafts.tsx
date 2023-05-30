@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
 import { GetServerSideProps } from "next"
 import Layout from "../components/Layout"

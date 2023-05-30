@@ -26,7 +26,7 @@ builder.prismaObject("User", {
 export const usersQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
     type: ["User"],
-    resolve: async (query, _parent, _args, _info) =>
+    resolve: async (query) =>
       prisma.user.findMany({
         ...query,
         where: {
@@ -44,7 +44,7 @@ export const signUpMutationType = (t: TMutationFieldBuilder) =>
       name: t.arg.string({ required: false }),
       email: t.arg.string({ required: true }),
     },
-    resolve: async (query, _parent, args, _info) =>
+    resolve: async (query, _parent, args) =>
       await prisma.user.create({
         ...query,
         data: {
