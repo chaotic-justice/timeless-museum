@@ -26,7 +26,7 @@ yarn dev
 
 The app is now running, navigate to [`http://localhost:3000/`](http://localhost:3000/) in your browser to explore its UI.
 
-<details><summary>Expand for a tour through the UI of the app</summary></details>
+<details><summary>Expand for a tour through the UI of the app</summary>
 
 <br />
 
@@ -348,15 +348,4 @@ const userWithUpdatedProfile = await prisma.user.update({
 
 </details>
 
-### 3. Build new UI features in React
-
-Once you have added a new query or mutation to the API, you can start building a new UI component in React. It could e.g. be called `profile.tsx` and would be located in the `pages` directory.
-
-In the application code, you can access the new operations via Apollo Client and populate the UI with the data you receive from the API calls.
-
-## Next steps
-
-- Check out the [Prisma docs](https://www.prisma.io/docs)
-- Share your feedback in the [`#product-wishlist`](https://prisma.slack.com/messages/CKQTGR6T0/) channel on the [Prisma Slack](https://slack.prisma.io/)
-- Create issues and ask questions on [GitHub](https://github.com/prisma/prisma/)
-- Watch our biweekly "What's new in Prisma" livestreams on [Youtube](https://www.youtube.com/channel/UCptAHlN1gdwD89tFM3ENb6w)
+<!-- 13947101588 -->
