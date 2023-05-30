@@ -65,7 +65,7 @@ export const createArtworkMutationType = (t: TMutationFieldBuilder) =>
       imageUrls: t.arg.stringList({ required: true }),
       category: t.arg.string({ required: true }),
     },
-    resolve: async (query, _parent, args, ctx) => {
+    resolve: async (query, _parent, args, _ctx) => {
       const { title, description, imageUrls, category } = args
 
       // if (!(await ctx).user) {

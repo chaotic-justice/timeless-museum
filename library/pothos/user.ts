@@ -28,6 +28,7 @@ export const usersQueryType = (t: TQueryFieldBuilder) =>
     type: ["User"],
     resolve: async (query, _parent, _args, _info) =>
       prisma.user.findMany({
+        ...query,
         where: {
           email: {
             not: "",
