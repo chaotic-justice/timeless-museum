@@ -1,6 +1,3 @@
-import { writeFileSync } from "fs"
-import { lexicographicSortSchema, printSchema } from "graphql"
-import path from "path"
 import { artworkQueryType, artworksQueryType, createArtworkMutationType } from "./artwork"
 import { builder } from "./builder"
 import {
@@ -38,6 +35,6 @@ builder.mutationType({
 })
 
 export const schema = builder.toSchema()
-const schemaAsString = printSchema(lexicographicSortSchema(schema))
+// const schemaAsString = printSchema(lexicographicSortSchema(schema))
 
-writeFileSync(path.resolve("./generated/schema.graphql"), schemaAsString)
+// writeFileSync(path.resolve("/tmp/generated/schema.graphql"), schemaAsString)
