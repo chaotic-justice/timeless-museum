@@ -1,5 +1,5 @@
-import request from "graphql-request"
-import { graphql } from "../gql"
+import request from 'graphql-request'
+import { graphql } from '../gql'
 
 export const PostFragment = graphql(`
   fragment PostItem on Post {

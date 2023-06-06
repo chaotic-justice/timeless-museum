@@ -1,248 +1,248 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core'
+export type Maybe<T> = T | null
+export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
+  [K in keyof T]: T[K]
+}
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
+  [SubKey in K]?: Maybe<T[SubKey]>
+}
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+  [SubKey in K]: Maybe<T[SubKey]>
+}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
+  ID: string
+  String: string
+  Boolean: boolean
+  Int: number
+  Float: number
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  Date: any;
-};
+  Date: any
+}
 
 export type Artwork = {
-  __typename?: "Artwork";
-  category: Scalars["String"];
-  createdAt: Scalars["Date"];
-  description?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  imageUrls: Array<Scalars["String"]>;
-  title: Scalars["String"];
-};
+  __typename?: 'Artwork'
+  category: Scalars['String']
+  createdAt: Scalars['Date']
+  description?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  imageUrls: Array<Scalars['String']>
+  title: Scalars['String']
+}
 
 export type Mutation = {
-  __typename?: "Mutation";
-  createArtwork: Artwork;
-  createDraft: Post;
-  deletePost: Post;
-  publishDraft: Post;
-  signUp: User;
-};
+  __typename?: 'Mutation'
+  createArtwork: Artwork
+  createDraft: Post
+  deletePost: Post
+  publishDraft: Post
+  signUp: User
+}
 
 export type MutationCreateArtworkArgs = {
-  category: Scalars["String"];
-  description?: InputMaybe<Scalars["String"]>;
-  imageUrls: Array<Scalars["String"]>;
-  title: Scalars["String"];
-};
+  category: Scalars['String']
+  description?: InputMaybe<Scalars['String']>
+  imageUrls: Array<Scalars['String']>
+  title: Scalars['String']
+}
 
 export type MutationCreateDraftArgs = {
-  authorEmail: Scalars["String"];
-  content?: InputMaybe<Scalars["String"]>;
-  title: Scalars["String"];
-};
+  authorEmail: Scalars['String']
+  content?: InputMaybe<Scalars['String']>
+  title: Scalars['String']
+}
 
 export type MutationDeletePostArgs = {
-  id: Scalars["ID"];
-};
+  id: Scalars['ID']
+}
 
 export type MutationPublishDraftArgs = {
-  id: Scalars["ID"];
-};
+  id: Scalars['ID']
+}
 
 export type MutationSignUpArgs = {
-  email: Scalars["String"];
-  name?: InputMaybe<Scalars["String"]>;
-};
+  email: Scalars['String']
+  name?: InputMaybe<Scalars['String']>
+}
 
 export type Post = {
-  __typename?: "Post";
-  author: User;
-  content?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  published: Scalars["Boolean"];
-  title: Scalars["String"];
-};
+  __typename?: 'Post'
+  author: User
+  content?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  published: Scalars['Boolean']
+  title: Scalars['String']
+}
 
 export type Query = {
-  __typename?: "Query";
-  filterPostsBy: Array<Post>;
-  getArtworkById?: Maybe<Artwork>;
-  getArtworks: Array<Artwork>;
-  getDrafts: Array<Post>;
-  getPostById?: Maybe<Post>;
-  getUsers: Array<User>;
-};
+  __typename?: 'Query'
+  filterPostsBy: Array<Post>
+  getArtworkById?: Maybe<Artwork>
+  getArtworks: Array<Artwork>
+  getDrafts: Array<Post>
+  getPostById?: Maybe<Post>
+  getUsers: Array<User>
+}
 
 export type QueryFilterPostsByArgs = {
-  searchString?: InputMaybe<Scalars["String"]>;
-};
+  searchString?: InputMaybe<Scalars['String']>
+}
 
 export type QueryGetArtworkByIdArgs = {
-  id: Scalars["ID"];
-};
+  id: Scalars['ID']
+}
 
 export type QueryGetPostByIdArgs = {
-  id: Scalars["ID"];
-};
+  id: Scalars['ID']
+}
 
 export enum Role {
-  Admin = "ADMIN",
-  User = "USER",
+  Admin = 'ADMIN',
+  User = 'USER',
 }
 
 export type User = {
-  __typename?: "User";
-  email?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  name?: Maybe<Scalars["String"]>;
-  posts: Array<Post>;
-  role: Role;
-};
+  __typename?: 'User'
+  email?: Maybe<Scalars['String']>
+  id: Scalars['ID']
+  name?: Maybe<Scalars['String']>
+  posts: Array<Post>
+  role: Role
+}
 
 export type CreateArtworkMutationVariables = Exact<{
-  title: Scalars["String"];
-  imageUrls: Array<Scalars["String"]> | Scalars["String"];
-  category: Scalars["String"];
-  description?: InputMaybe<Scalars["String"]>;
-}>;
+  title: Scalars['String']
+  imageUrls: Array<Scalars['String']> | Scalars['String']
+  category: Scalars['String']
+  description?: InputMaybe<Scalars['String']>
+}>
 
 export type CreateArtworkMutation = {
-  __typename?: "Mutation";
+  __typename?: 'Mutation'
   createArtwork: {
-    __typename?: "Artwork";
-    title: string;
-    createdAt: any;
-    imageUrls: Array<string>;
-    category: string;
-    description?: string | null;
-  };
-};
+    __typename?: 'Artwork'
+    title: string
+    createdAt: any
+    imageUrls: Array<string>
+    category: string
+    description?: string | null
+  }
+}
 
-export type GetArtworksQueryVariables = Exact<{ [key: string]: never }>;
+export type GetArtworksQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetArtworksQuery = {
-  __typename?: "Query";
+  __typename?: 'Query'
   getArtworks: Array<{
-    __typename?: "Artwork";
-    id: string;
-    title: string;
-    description?: string | null;
-    category: string;
-    createdAt: any;
-    imageUrls: Array<string>;
-  }>;
-};
+    __typename?: 'Artwork'
+    id: string
+    title: string
+    description?: string | null
+    category: string
+    createdAt: any
+    imageUrls: Array<string>
+  }>
+}
 
 export type GetArtworkByIdQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
+  id: Scalars['ID']
+}>
 
 export type GetArtworkByIdQuery = {
-  __typename?: "Query";
+  __typename?: 'Query'
   getArtworkById?: {
-    __typename?: "Artwork";
-    id: string;
-    title: string;
-    description?: string | null;
-    category: string;
-    imageUrls: Array<string>;
-    createdAt: any;
-  } | null;
-};
+    __typename?: 'Artwork'
+    id: string
+    title: string
+    description?: string | null
+    category: string
+    imageUrls: Array<string>
+    createdAt: any
+  } | null
+}
 
 export type PostItemFragment = {
-  __typename?: "Post";
-  id: string;
-  title: string;
-  content?: string | null;
-  published: boolean;
-  author: { __typename?: "User"; id: string; name?: string | null };
-} & { " $fragmentName"?: "PostItemFragment" };
+  __typename?: 'Post'
+  id: string
+  title: string
+  content?: string | null
+  published: boolean
+  author: { __typename?: 'User'; id: string; name?: string | null }
+} & { ' $fragmentName'?: 'PostItemFragment' }
 
 export type PublishDraftMutationVariables = Exact<{
-  id: Scalars["ID"];
-}>;
+  id: Scalars['ID']
+}>
 
 export type PublishDraftMutation = {
-  __typename?: "Mutation";
-  publishDraft: { __typename?: "Post" } & {
-    " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
-  };
-};
+  __typename?: 'Mutation'
+  publishDraft: { __typename?: 'Post' } & {
+    ' $fragmentRefs'?: { PostItemFragment: PostItemFragment }
+  }
+}
 
 export type DeletePostMutationVariables = Exact<{
-  id: Scalars["ID"];
-}>;
+  id: Scalars['ID']
+}>
 
 export type DeletePostMutation = {
-  __typename?: "Mutation";
-  deletePost: { __typename?: "Post" } & {
-    " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
-  };
-};
+  __typename?: 'Mutation'
+  deletePost: { __typename?: 'Post' } & {
+    ' $fragmentRefs'?: { PostItemFragment: PostItemFragment }
+  }
+}
 
 export type GetPostByIdQueryVariables = Exact<{
-  id: Scalars["ID"];
-}>;
+  id: Scalars['ID']
+}>
 
 export type GetPostByIdQuery = {
-  __typename?: "Query";
+  __typename?: 'Query'
   getPostById?:
-    | ({ __typename?: "Post" } & {
-        " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
+    | ({ __typename?: 'Post' } & {
+        ' $fragmentRefs'?: { PostItemFragment: PostItemFragment }
       })
-    | null;
-};
+    | null
+}
 
-export type GetDraftsQueryVariables = Exact<{ [key: string]: never }>;
+export type GetDraftsQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetDraftsQuery = {
-  __typename?: "Query";
+  __typename?: 'Query'
   getDrafts: Array<
-    { __typename?: "Post" } & {
-      " $fragmentRefs"?: { PostItemFragment: PostItemFragment };
+    { __typename?: 'Post' } & {
+      ' $fragmentRefs'?: { PostItemFragment: PostItemFragment }
     }
-  >;
-};
+  >
+}
 
 export const PostItemFragmentDoc = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PostItem" },
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PostItem' },
       typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Post" },
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Post' },
       },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "content" } },
-          { kind: "Field", name: { kind: "Name", value: "published" } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'published' } },
           {
-            kind: "Field",
-            name: { kind: "Name", value: "author" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'author' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
               ],
             },
           },
@@ -250,121 +250,121 @@ export const PostItemFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<PostItemFragment, unknown>;
+} as unknown as DocumentNode<PostItemFragment, unknown>
 export const CreateArtworkDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "CreateArtwork" },
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateArtwork' },
       variableDefinitions: [
         {
-          kind: "VariableDefinition",
+          kind: 'VariableDefinition',
           variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "title" },
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'title' },
           },
           type: {
-            kind: "NonNullType",
+            kind: 'NonNullType',
             type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
             },
           },
         },
         {
-          kind: "VariableDefinition",
+          kind: 'VariableDefinition',
           variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "imageUrls" },
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'imageUrls' },
           },
           type: {
-            kind: "NonNullType",
+            kind: 'NonNullType',
             type: {
-              kind: "ListType",
+              kind: 'ListType',
               type: {
-                kind: "NonNullType",
+                kind: 'NonNullType',
                 type: {
-                  kind: "NamedType",
-                  name: { kind: "Name", value: "String" },
+                  kind: 'NamedType',
+                  name: { kind: 'Name', value: 'String' },
                 },
               },
             },
           },
         },
         {
-          kind: "VariableDefinition",
+          kind: 'VariableDefinition',
           variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "category" },
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'category' },
           },
           type: {
-            kind: "NonNullType",
+            kind: 'NonNullType',
             type: {
-              kind: "NamedType",
-              name: { kind: "Name", value: "String" },
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
             },
           },
         },
         {
-          kind: "VariableDefinition",
+          kind: 'VariableDefinition',
           variable: {
-            kind: "Variable",
-            name: { kind: "Name", value: "description" },
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'description' },
           },
-          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
         },
       ],
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "createArtwork" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createArtwork' },
             arguments: [
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "title" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'title' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "title" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'title' },
                 },
               },
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "imageUrls" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'imageUrls' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "imageUrls" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'imageUrls' },
                 },
               },
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "category" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'category' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "category" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'category' },
                 },
               },
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "description" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'description' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "description" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'description' },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
-                { kind: "Field", name: { kind: "Name", value: "category" } },
-                { kind: "Field", name: { kind: "Name", value: "description" } },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'imageUrls' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
               ],
             },
           },
@@ -372,32 +372,29 @@ export const CreateArtworkDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<
-  CreateArtworkMutation,
-  CreateArtworkMutationVariables
->;
+} as unknown as DocumentNode<CreateArtworkMutation, CreateArtworkMutationVariables>
 export const GetArtworksDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetArtworks" },
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetArtworks' },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "getArtworks" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getArtworks' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-                { kind: "Field", name: { kind: "Name", value: "description" } },
-                { kind: "Field", name: { kind: "Name", value: "category" } },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'imageUrls' } },
               ],
             },
           },
@@ -405,49 +402,49 @@ export const GetArtworksDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<GetArtworksQuery, GetArtworksQueryVariables>;
+} as unknown as DocumentNode<GetArtworksQuery, GetArtworksQueryVariables>
 export const GetArtworkByIdDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetArtworkById" },
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetArtworkById' },
       variableDefinitions: [
         {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
           },
         },
       ],
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "getArtworkById" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getArtworkById' },
             arguments: [
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "title" } },
-                { kind: "Field", name: { kind: "Name", value: "description" } },
-                { kind: "Field", name: { kind: "Name", value: "category" } },
-                { kind: "Field", name: { kind: "Name", value: "imageUrls" } },
-                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'category' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'imageUrls' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
               ],
             },
           },
@@ -455,46 +452,46 @@ export const GetArtworkByIdDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<GetArtworkByIdQuery, GetArtworkByIdQueryVariables>;
+} as unknown as DocumentNode<GetArtworkByIdQuery, GetArtworkByIdQueryVariables>
 export const PublishDraftDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "PublishDraft" },
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'PublishDraft' },
       variableDefinitions: [
         {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
           },
         },
       ],
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "publishDraft" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'publishDraft' },
             arguments: [
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PostItem" },
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'PostItem' },
                 },
               ],
             },
@@ -503,27 +500,27 @@ export const PublishDraftDocument = {
       },
     },
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PostItem" },
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PostItem' },
       typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Post" },
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Post' },
       },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "content" } },
-          { kind: "Field", name: { kind: "Name", value: "published" } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'published' } },
           {
-            kind: "Field",
-            name: { kind: "Name", value: "author" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'author' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
               ],
             },
           },
@@ -531,49 +528,46 @@ export const PublishDraftDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<
-  PublishDraftMutation,
-  PublishDraftMutationVariables
->;
+} as unknown as DocumentNode<PublishDraftMutation, PublishDraftMutationVariables>
 export const DeletePostDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "mutation",
-      name: { kind: "Name", value: "DeletePost" },
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeletePost' },
       variableDefinitions: [
         {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
           },
         },
       ],
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "deletePost" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deletePost' },
             arguments: [
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PostItem" },
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'PostItem' },
                 },
               ],
             },
@@ -582,27 +576,27 @@ export const DeletePostDocument = {
       },
     },
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PostItem" },
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PostItem' },
       typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Post" },
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Post' },
       },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "content" } },
-          { kind: "Field", name: { kind: "Name", value: "published" } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'published' } },
           {
-            kind: "Field",
-            name: { kind: "Name", value: "author" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'author' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
               ],
             },
           },
@@ -610,46 +604,46 @@ export const DeletePostDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<DeletePostMutation, DeletePostMutationVariables>;
+} as unknown as DocumentNode<DeletePostMutation, DeletePostMutationVariables>
 export const GetPostByIdDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetPostById" },
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetPostById' },
       variableDefinitions: [
         {
-          kind: "VariableDefinition",
-          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
-            kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
           },
         },
       ],
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "getPostById" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getPostById' },
             arguments: [
               {
-                kind: "Argument",
-                name: { kind: "Name", value: "id" },
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
                 value: {
-                  kind: "Variable",
-                  name: { kind: "Name", value: "id" },
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'id' },
                 },
               },
             ],
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PostItem" },
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'PostItem' },
                 },
               ],
             },
@@ -658,27 +652,27 @@ export const GetPostByIdDocument = {
       },
     },
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PostItem" },
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PostItem' },
       typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Post" },
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Post' },
       },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "content" } },
-          { kind: "Field", name: { kind: "Name", value: "published" } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'published' } },
           {
-            kind: "Field",
-            name: { kind: "Name", value: "author" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'author' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
               ],
             },
           },
@@ -686,26 +680,26 @@ export const GetPostByIdDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<GetPostByIdQuery, GetPostByIdQueryVariables>;
+} as unknown as DocumentNode<GetPostByIdQuery, GetPostByIdQueryVariables>
 export const GetDraftsDocument = {
-  kind: "Document",
+  kind: 'Document',
   definitions: [
     {
-      kind: "OperationDefinition",
-      operation: "query",
-      name: { kind: "Name", value: "GetDrafts" },
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetDrafts' },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
           {
-            kind: "Field",
-            name: { kind: "Name", value: "getDrafts" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getDrafts' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PostItem" },
+                  kind: 'FragmentSpread',
+                  name: { kind: 'Name', value: 'PostItem' },
                 },
               ],
             },
@@ -714,27 +708,27 @@ export const GetDraftsDocument = {
       },
     },
     {
-      kind: "FragmentDefinition",
-      name: { kind: "Name", value: "PostItem" },
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'PostItem' },
       typeCondition: {
-        kind: "NamedType",
-        name: { kind: "Name", value: "Post" },
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'Post' },
       },
       selectionSet: {
-        kind: "SelectionSet",
+        kind: 'SelectionSet',
         selections: [
-          { kind: "Field", name: { kind: "Name", value: "id" } },
-          { kind: "Field", name: { kind: "Name", value: "title" } },
-          { kind: "Field", name: { kind: "Name", value: "content" } },
-          { kind: "Field", name: { kind: "Name", value: "published" } },
+          { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'content' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'published' } },
           {
-            kind: "Field",
-            name: { kind: "Name", value: "author" },
+            kind: 'Field',
+            name: { kind: 'Name', value: 'author' },
             selectionSet: {
-              kind: "SelectionSet",
+              kind: 'SelectionSet',
               selections: [
-                { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } },
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
               ],
             },
           },
@@ -742,4 +736,4 @@ export const GetDraftsDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<GetDraftsQuery, GetDraftsQueryVariables>;
+} as unknown as DocumentNode<GetDraftsQuery, GetDraftsQueryVariables>

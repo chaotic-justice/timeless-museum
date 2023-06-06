@@ -1,13 +1,13 @@
-import aws from "aws-sdk"
-import type { NextApiRequest, NextApiResponse } from "next"
-import { getToken } from "next-auth/jwt"
+import aws from 'aws-sdk'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { getToken } from 'next-auth/jwt'
 
 // migrate this to v3
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const token = await getToken({ req })
   if (!token || !token.admin) {
-    console.log("JSON Web Token", JSON.stringify(token, null, 2))
-    console.log("admin procedure")
+    console.log('JSON Web Token', JSON.stringify(token, null, 2))
+    console.log('admin procedure')
     return res.status(401).json({
       data: null,
     })
@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       accessKeyId: process.env.APP_AWS_ACCESS_KEY,
       secretAccessKey: process.env.APP_AWS_SECRET_KEY,
       region: process.env.APP_AWS_REGION,
-      signatureVersion: "v4",
+      signatureVersion: 'v4',
     })
 
     // 3.
@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
       Expires: 600, // seconds
       Conditions: [
-        ["content-length-range", 0, 5048576], // up to 1 MB
+        ['content-length-range', 0, 5048576], // up to 1 MB
       ],
     })
 

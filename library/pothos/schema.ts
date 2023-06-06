@@ -1,5 +1,5 @@
-import { artworkQueryType, artworksQueryType, createArtworkMutationType } from "./artwork"
-import { builder } from "./builder"
+import { artworkQueryType, artworksQueryType, createArtworkMutationType } from './artwork'
+import { builder } from './builder'
 import {
   createDraftMutationType,
   deletePostMutationType,
@@ -7,11 +7,11 @@ import {
   filterPostsQueryType,
   postQueryType,
   publishDraftMutationType,
-} from "./post"
-import { signUpMutationType, usersQueryType } from "./user"
+} from './post'
+import { signUpMutationType, usersQueryType } from './user'
 
 builder.queryType({
-  fields: (t) => ({
+  fields: t => ({
     getArtworkById: artworkQueryType(t),
     getArtworks: artworksQueryType(t),
     getUsers: usersQueryType(t),
@@ -22,7 +22,7 @@ builder.queryType({
 })
 
 builder.mutationType({
-  fields: (t) => ({
+  fields: t => ({
     // user
     signUp: signUpMutationType(t),
     // post

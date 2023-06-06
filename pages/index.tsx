@@ -1,11 +1,11 @@
-import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticProps } from "next"
-import Gallery from "../components/Gallery"
-import Layout from "../components/Layout"
-import { getArtworks } from "../library/hooks"
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query'
+import { GetStaticProps } from 'next'
+import Gallery from '../components/Gallery'
+import Layout from '../components/layout/Layout'
+import { getArtworks } from '../library/hooks'
 
 const Wall = () => {
-  const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getArtworks() })
+  const { data } = useQuery({ queryKey: ['photographs'], queryFn: () => getArtworks() })
   if (data?.getArtworks === undefined) return
 
   return (
@@ -18,7 +18,7 @@ const Wall = () => {
 export const getStaticProps: GetStaticProps = async () => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
-    queryKey: ["photographs"],
+    queryKey: ['photographs'],
     queryFn: () => getArtworks(),
     staleTime: 60 * 1000 * 15,
   })

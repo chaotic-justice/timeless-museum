@@ -1,8 +1,8 @@
-import SchemaBuilder from "@pothos/core"
-import PrismaPlugin from "@pothos/plugin-prisma"
-import type PrismaTypes from "@pothos/plugin-prisma/generated"
-import prisma from "../prisma"
-import { DateResolver } from "graphql-scalars"
+import SchemaBuilder from '@pothos/core'
+import PrismaPlugin from '@pothos/plugin-prisma'
+import type PrismaTypes from '@pothos/plugin-prisma/generated'
+import prisma from '../prisma'
+import { DateResolver } from 'graphql-scalars'
 
 export const builder = new SchemaBuilder<{
   Scalars: {
@@ -42,4 +42,4 @@ export type TMutationFieldBuilder = PothosSchemaTypes.MutationFieldBuilder<
   object
 >
 
-builder.addScalarType("Date", DateResolver, {})
+builder.addScalarType('Date', DateResolver, {})
