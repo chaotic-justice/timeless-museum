@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 import { QueryClient, dehydrate, useMutation, useQuery } from "@tanstack/react-query"
 import request from "graphql-request"
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next"
+import { GetStaticPaths, GetStaticProps } from "next"
 import Router, { useRouter } from "next/router"
 import Layout from "../../components/layout/Layout"
 import { useFragment } from "../../library/gql"
@@ -9,7 +9,7 @@ import { PostItemFragment } from "../../library/gql/graphql"
 import { PostFragment, getPostById, publishDraftDocument } from "../../library/hooks"
 import prisma from "../../library/prisma"
 
-const Post = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Post = () => {
   const queryClient = new QueryClient()
   const {
     query: { id },

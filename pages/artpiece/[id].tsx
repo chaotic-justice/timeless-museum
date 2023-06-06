@@ -1,12 +1,12 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next"
+import { GetStaticPaths, GetStaticProps } from "next"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import Layout from "../../components/layout/Layout"
 import { getArtworkById } from "../../library/hooks"
 import prisma from "../../library/prisma"
 
-const ArtPiece = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+const ArtPiece = () => {
   const {
     query: { id },
   } = useRouter()
@@ -16,7 +16,7 @@ const ArtPiece = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-56 py-8">
         <h1 className="text-4xl font-bold mb-4">{artwork.title}</h1>
         <Image
           priority
@@ -59,7 +59,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     queryKey: ["artwork", params?.id],
     queryFn: () => getArtworkById(params?.id as string),
     staleTime: 60 * 1000 * 15, // activate gc every 15mins
-    // staleTime: 1500, // refresh the query every 15mins
   })
 
   return {

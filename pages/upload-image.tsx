@@ -14,7 +14,7 @@ type FormValues = {
   images: FileList
 }
 
-const Uploaded = (props) => {
+const Uploaded = () => {
   const router = useRouter()
   const {
     register,
