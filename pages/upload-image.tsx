@@ -2,7 +2,7 @@ import React from "react"
 import { useMutation } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
-import Layout from "../components/Layout"
+import Layout from "../components/layout/Layout"
 import { MutationCreateArtworkArgs } from "../library/gql/graphql"
 import { createArtwork } from "../library/hooks"
 import { useRouter } from "next/router"
@@ -14,7 +14,7 @@ type FormValues = {
   images: FileList
 }
 
-const Uploaded = () => {
+const Uploaded = (props) => {
   const router = useRouter()
   const {
     register,

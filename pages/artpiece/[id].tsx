@@ -1,12 +1,12 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticPaths, GetStaticProps } from "next"
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from "next"
 import Image from "next/image"
 import { useRouter } from "next/router"
-import Layout from "../../components/Layout"
+import Layout from "../../components/layout/Layout"
 import { getArtworkById } from "../../library/hooks"
 import prisma from "../../library/prisma"
 
-const ArtPiece = () => {
+const ArtPiece = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const {
     query: { id },
   } = useRouter()

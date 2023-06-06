@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ["Inter", "sans-serif"],
+      newsletter: ["Sabon", "Times New Roman", "Times", "Georgia", "Serif"],
     },
     extend: {},
   },

@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unknown-property */
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetServerSideProps } from "next"
-import Layout from "../components/Layout"
+import { GetServerSideProps, InferGetServerSidePropsType } from "next"
+import Layout from "../components/layout/Layout"
 import Post from "../components/Post"
 import { useFragment } from "../library/gql"
 import { PostFragment, getDrafts } from "../library/hooks"
 
-const Drafts = () => {
+const Drafts = (props: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { data } = useQuery({ queryKey: ["drafts"], queryFn: getDrafts })
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const drafts = data?.getDrafts.map((d) => useFragment(PostFragment, d))

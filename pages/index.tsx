@@ -1,10 +1,10 @@
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticProps } from "next"
+import { GetStaticProps, InferGetStaticPropsType } from "next"
 import Gallery from "../components/Gallery"
-import Layout from "../components/Layout"
+import Layout from "../components/layout/Layout"
 import { getArtworks } from "../library/hooks"
 
-const Wall = () => {
+const Wall = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { data } = useQuery({ queryKey: ["photographs"], queryFn: () => getArtworks() })
   if (data?.getArtworks === undefined) return
 
