@@ -1,47 +1,44 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { NextApiHandler } from 'next'
-import NextAuth, { NextAuthOptions } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
-import adminUsers from '../../../library/admins'
+import NextAuth, { NextAuthOptions, Session } from 'next-auth'
+import Google from 'next-auth/providers/google'
+
+import { Role } from '@prisma/client'
+import { AdapterUser } from 'next-auth/adapters'
 import prisma from '../../../library/prisma'
+
+interface CustomSession extends Session {
+  user: {
+    role: Role
+    name?: string | null
+    email?: string | null
+    image?: string | null
+  }
+}
+
+export interface CustomUser extends AdapterUser {
+  role: Role
+}
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
 export default authHandler
 
 const options: NextAuthOptions = {
   providers: [
-    GoogleProvider({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    // GitHubProvider({
-    //   clientId: process.env.GITHUB_ID,
-    //   clientSecret: process.env.GITHUB_SECRET,
-    // }),
-    // EmailProvider({
-    //   server: {
-    //     host: process.env.SMTP_HOST,
-    //     port: Number(process.env.SMTP_PORT),
-    //     auth: {
-    //       user: process.env.SMTP_USER,
-    //       pass: process.env.SMTP_PASSWORD,
-    //     },
-    //   },
-    //   from: process.env.SMTP_FROM,
-    // }),
   ],
   adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: 'jwt',
-  },
   callbacks: {
-    async jwt({ token }) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      token.admin = adminUsers.includes(token.email!)
-      return token
+    session({ session, user }) {
+      if (session.user) {
+        ;(session as CustomSession).user.role = (user as CustomUser).role
+      }
+      return session
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
 }
 // #pass='KauD0=s@'
-// TODO: lookup how to implement Component.auth?
