@@ -1,9 +1,9 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { NextApiHandler } from "next"
-import NextAuth, { NextAuthOptions } from "next-auth"
-import GoogleProvider from "next-auth/providers/google"
-import adminUsers from "../../../library/admins"
-import prisma from "../../../library/prisma"
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { NextApiHandler } from 'next'
+import NextAuth, { NextAuthOptions } from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+import adminUsers from '../../../library/admins'
+import prisma from '../../../library/prisma'
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
 export default authHandler
@@ -32,7 +32,7 @@ const options: NextAuthOptions = {
   ],
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async jwt({ token }) {

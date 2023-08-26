@@ -1,16 +1,16 @@
-import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query"
-import { GetStaticPaths, GetStaticProps } from "next"
-import Image from "next/image"
-import { useRouter } from "next/router"
-import Layout from "../../components/layout/Layout"
-import { getArtworkById } from "../../library/hooks"
-import prisma from "../../library/prisma"
+import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import Layout from '../../components/layout/Layout'
+import { getArtworkById } from '../../library/hooks'
+import prisma from '../../library/prisma'
 
 const ArtPiece = () => {
   const {
     query: { id },
   } = useRouter()
-  const { data } = useQuery({ queryKey: ["artwork", id], queryFn: () => getArtworkById(id as string) })
+  const { data } = useQuery({ queryKey: ['artwork', id], queryFn: () => getArtworkById(id as string) })
   const artwork = data?.getArtworkById
   if (!artwork) return
 
@@ -24,7 +24,7 @@ const ArtPiece = () => {
           width={800}
           className="w-full mb-4"
           src={artwork.imageUrls[0]}
-          alt={artwork.description ?? "alt"}
+          alt={artwork.description ?? 'alt'}
         />
         <p className="text-gray-800 text-base">{artwork.description}</p>
       </div>
@@ -42,7 +42,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       },
     },
   })
-  const paths = artworks.map((aw) => ({
+  const paths = artworks.map(aw => ({
     params: {
       id: String(aw.id),
     },
@@ -56,7 +56,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
-    queryKey: ["artwork", params?.id],
+    queryKey: ['artwork', params?.id],
     queryFn: () => getArtworkById(params?.id as string),
     staleTime: 60 * 1000 * 15, // activate gc every 15mins
   })

@@ -1,11 +1,11 @@
-import { withAuth } from "next-auth/middleware"
-import { NextResponse } from "next/server"
+import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
 export default withAuth(
   // `withAuth` augments your `Request` with the user's token.
   function middleware(req) {
     if (!req.nextauth.token!.admin) {
-      const newUrl = new URL("/", req.url)
+      const newUrl = new URL('/', req.url)
       return NextResponse.redirect(newUrl)
     }
   }
@@ -18,4 +18,4 @@ export default withAuth(
   // }
 )
 
-export const config = { matcher: ["/upload-image"] }
+export const config = { matcher: ['/upload-image'] }

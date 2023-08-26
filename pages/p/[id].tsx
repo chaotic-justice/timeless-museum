@@ -1,36 +1,36 @@
 /* eslint-disable react/no-unknown-property */
-import { QueryClient, dehydrate, useMutation, useQuery } from "@tanstack/react-query"
-import request from "graphql-request"
-import { GetStaticPaths, GetStaticProps } from "next"
-import Router, { useRouter } from "next/router"
-import Layout from "../../components/layout/Layout"
-import { useFragment } from "../../library/gql"
-import { PostItemFragment } from "../../library/gql/graphql"
-import { PostFragment, getPostById, publishDraftDocument } from "../../library/hooks"
-import prisma from "../../library/prisma"
+import { QueryClient, dehydrate, useMutation, useQuery } from '@tanstack/react-query'
+import request from 'graphql-request'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import Router, { useRouter } from 'next/router'
+import Layout from '../../components/layout/Layout'
+import { useFragment } from '../../library/gql'
+import { PostItemFragment } from '../../library/gql/graphql'
+import { PostFragment, getPostById, publishDraftDocument } from '../../library/hooks'
+import prisma from '../../library/prisma'
 
 const Post = () => {
   const queryClient = new QueryClient()
   const {
     query: { id },
   } = useRouter()
-  const { data } = useQuery({ queryKey: ["post", id], queryFn: () => getPostById(id as string) })
+  const { data } = useQuery({ queryKey: ['post', id], queryFn: () => getPostById(id as string) })
 
   const { mutate, isLoading } = useMutation({
     mutationFn: async (postId: string) =>
       await request(process.env.NEXT_PUBLIC_GQL_API, publishDraftDocument, { id: postId }),
     // When mutate is called:
-    onMutate: async (postId) => {
+    onMutate: async postId => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ["post", postId] })
+      await queryClient.cancelQueries({ queryKey: ['post', postId] })
 
       // Snapshot the previous value
-      const prevPost = queryClient.getQueryData<PostItemFragment>(["post", postId])
+      const prevPost = queryClient.getQueryData<PostItemFragment>(['post', postId])
 
       // Optimistically update to the new value
       if (prevPost) {
-        queryClient.setQueryData<PostItemFragment>(["post", postId], {
+        queryClient.setQueryData<PostItemFragment>(['post', postId], {
           ...prevPost,
           published: true,
         })
@@ -42,19 +42,19 @@ const Post = () => {
     // use the context returned from onMutate to roll back
     onError: (err, postId, context) => {
       if (context?.prevPost) {
-        queryClient.setQueryData<PostItemFragment>(["post", postId], context.prevPost)
+        queryClient.setQueryData<PostItemFragment>(['post', postId], context.prevPost)
       }
-      console.error("err:", err)
+      console.error('err:', err)
     },
     // Always refetch after error or success:
-    onSettled: (postId) => {
-      queryClient.invalidateQueries({ queryKey: ["post", postId] })
+    onSettled: postId => {
+      queryClient.invalidateQueries({ queryKey: ['post', postId] })
     },
   })
   // const [deletePost] = useMutation(DeleteMutation)
 
   if (isLoading) {
-    console.log("mutation loading")
+    console.log('mutation loading')
   }
 
   const post = useFragment(PostFragment, data?.getPostById)
@@ -65,7 +65,7 @@ const Post = () => {
     title = `${title} (Draft)`
   }
 
-  const authorName = post.author ? post.author.name : "Unknown author"
+  const authorName = post.author ? post.author.name : 'Unknown author'
   return (
     <Layout>
       <div>
@@ -76,7 +76,7 @@ const Post = () => {
           <button
             onClick={() => {
               mutate(post.id)
-              Router.push("/")
+              Router.push('/')
             }}
           >
             Publish
@@ -89,7 +89,7 @@ const Post = () => {
             //     id,
             //   },
             // })
-            Router.push("/")
+            Router.push('/')
           }}
         >
           Delete
@@ -122,7 +122,7 @@ const Post = () => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await prisma.post.findMany({})
-  const paths = posts.map((post) => ({
+  const paths = posts.map(post => ({
     params: {
       id: String(post.id),
     },
@@ -136,7 +136,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
-    queryKey: ["post", params?.id],
+    queryKey: ['post', params?.id],
     queryFn: () => getPostById(params?.id as string),
     staleTime: 60 * 1000 * 15, // activate gc every 15mins
     // staleTime: 1500, // refresh the query every 15mins

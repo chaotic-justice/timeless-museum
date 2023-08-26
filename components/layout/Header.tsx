@@ -1,8 +1,8 @@
 /* eslint-disable react/no-unknown-property */
-import Link from "next/link"
-import { signIn, signOut, useSession } from "next-auth/react"
-import { useRouter } from "next/router"
-import adminUsers from "../../library/admins"
+import Link from 'next/link'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import adminUsers from '../../library/admins'
 
 const Header = () => {
   const { data: session, status } = useSession()
@@ -17,16 +17,16 @@ const Header = () => {
     <nav>
       <div className="left">
         <Link href="/" legacyBehavior shallow={true}>
-          <a className="bold" data-active={isActive("/")}>
+          <a className="bold" data-active={isActive('/')}>
             wall
           </a>
         </Link>
         <Link href="/drafts" legacyBehavior>
-          <a data-active={isActive("/drafts")}>archived</a>
+          <a data-active={isActive('/drafts')}>archived</a>
         </Link>
       </div>
       <div className="right">
-        {status === "authenticated" ? (
+        {status === 'authenticated' ? (
           <a href="#">
             <button onClick={() => signOut()}>logout</button>
           </a>
@@ -35,7 +35,7 @@ const Header = () => {
         )}
         {isAdmin && (
           <Link href="/upload-image" legacyBehavior>
-            <a data-active={isActive("/upload-image")}>+ upload photo</a>
+            <a data-active={isActive('/upload-image')}>+ upload photo</a>
           </Link>
         )}
       </div>
@@ -56,7 +56,7 @@ const Header = () => {
           display: inline-block;
         }
 
-        .left a[data-active="true"] {
+        .left a[data-active='true'] {
           color: gray;
         }
 

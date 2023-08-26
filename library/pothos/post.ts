@@ -1,13 +1,13 @@
-import prisma from "../prisma"
-import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from "./builder"
+import prisma from '../prisma'
+import { TMutationFieldBuilder, TQueryFieldBuilder, builder } from './builder'
 
-builder.prismaObject("Post", {
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    title: t.exposeString("title"),
-    content: t.exposeString("content", { nullable: true }),
-    published: t.exposeBoolean("published"),
-    author: t.relation("author"),
+builder.prismaObject('Post', {
+  fields: t => ({
+    id: t.exposeID('id'),
+    title: t.exposeString('title'),
+    content: t.exposeString('content', { nullable: true }),
+    published: t.exposeBoolean('published'),
+    author: t.relation('author'),
   }),
 })
 
@@ -15,7 +15,7 @@ builder.prismaObject("Post", {
 
 export const postQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
-    type: "Post",
+    type: 'Post',
     args: {
       id: t.arg.id({ required: true }),
     },
@@ -31,8 +31,8 @@ export const postQueryType = (t: TQueryFieldBuilder) =>
 
 export const draftsQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
-    type: ["Post"],
-    resolve: async (query) =>
+    type: ['Post'],
+    resolve: async query =>
       await prisma.post.findMany({
         ...query,
         where: { published: false },
@@ -41,7 +41,7 @@ export const draftsQueryType = (t: TQueryFieldBuilder) =>
 
 export const filterPostsQueryType = (t: TQueryFieldBuilder) =>
   t.prismaField({
-    type: ["Post"],
+    type: ['Post'],
     args: {
       searchString: t.arg.string({ required: false }),
     },
@@ -62,7 +62,7 @@ export const filterPostsQueryType = (t: TQueryFieldBuilder) =>
 
 export const createDraftMutationType = (t: TMutationFieldBuilder) =>
   t.prismaField({
-    type: "Post",
+    type: 'Post',
     args: {
       title: t.arg.string({ required: true }),
       content: t.arg.string(),
@@ -83,7 +83,7 @@ export const createDraftMutationType = (t: TMutationFieldBuilder) =>
 
 export const deletePostMutationType = (t: TMutationFieldBuilder) =>
   t.prismaField({
-    type: "Post",
+    type: 'Post',
     args: {
       id: t.arg.id({ required: true }),
     },
@@ -98,7 +98,7 @@ export const deletePostMutationType = (t: TMutationFieldBuilder) =>
 
 export const publishDraftMutationType = (t: TMutationFieldBuilder) =>
   t.prismaField({
-    type: "Post",
+    type: 'Post',
     args: {
       id: t.arg.id({ required: true }),
     },

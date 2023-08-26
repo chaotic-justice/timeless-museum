@@ -1,6 +1,6 @@
-import request from "graphql-request"
-import { graphql } from "../gql"
-import { MutationCreateArtworkArgs } from "../gql/graphql"
+import request from 'graphql-request'
+import { graphql } from '../gql'
+import { MutationCreateArtworkArgs } from '../gql/graphql'
 
 const createArtworkDocument = graphql(`
   mutation CreateArtwork($title: String!, $imageUrls: [String!]!, $category: String!, $description: String) {

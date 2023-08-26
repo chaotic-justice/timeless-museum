@@ -1,11 +1,11 @@
-import React from "react"
-import { useMutation } from "@tanstack/react-query"
-import { useForm, type SubmitHandler } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
-import Layout from "../components/layout/Layout"
-import { MutationCreateArtworkArgs } from "../library/gql/graphql"
-import { createArtwork } from "../library/hooks"
-import { useRouter } from "next/router"
+import React from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import toast, { Toaster } from 'react-hot-toast'
+import Layout from '../components/layout/Layout'
+import { MutationCreateArtworkArgs } from '../library/gql/graphql'
+import { createArtwork } from '../library/hooks'
+import { useRouter } from 'next/router'
 
 type FormValues = {
   title: string
@@ -25,7 +25,7 @@ const Uploaded = () => {
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
     onSuccess: () => {
-      router.push("/")
+      router.push('/')
     },
   })
 
@@ -46,18 +46,18 @@ const Uploaded = () => {
     toast.promise(
       // TODO: convert this fetch block to an api
       fetch(data.url, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       }),
       {
-        loading: "Uploading...",
-        success: "Image successfully uploaded!🎉",
+        loading: 'Uploading...',
+        success: 'Image successfully uploaded!🎉',
         error: `Upload failed 😥 Please try again`,
       }
     )
   }
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async data => {
     const { title, category, description, images } = data
     const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${images[0]?.name}`
     mutate({ title, category, description, imageUrls: [imageUrl] })
@@ -73,7 +73,7 @@ const Uploaded = () => {
             <span className="text-gray-700">Title</span>
             <input
               placeholder="Title"
-              {...register("title", { required: true })}
+              {...register('title', { required: true })}
               name="title"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -83,7 +83,7 @@ const Uploaded = () => {
             <span className="text-gray-700">Description</span>
             <input
               placeholder="Description"
-              {...register("description", { required: false })}
+              {...register('description', { required: false })}
               name="description"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -93,7 +93,7 @@ const Uploaded = () => {
             <span className="text-gray-700">Category</span>
             <input
               placeholder="Name"
-              {...register("category", { required: true })}
+              {...register('category', { required: true })}
               name="category"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -102,7 +102,7 @@ const Uploaded = () => {
           <label className="block">
             <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
             <input
-              {...register("images", { required: true })}
+              {...register('images', { required: true })}
               onChange={uploadPhoto}
               type="file"
               accept="image/*"

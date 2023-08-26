@@ -14,7 +14,7 @@
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
-      { 
+      {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^_"
@@ -23,6 +23,6 @@
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     // allow jsx syntax in js files (for next.js project)
-     "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".ts", ".tsx"] }]
   }
 }
