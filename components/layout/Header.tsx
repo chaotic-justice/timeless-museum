@@ -1,12 +1,12 @@
 /* eslint-disable react/no-unknown-property */
-import Link from 'next/link'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
-import adminUsers from '../../library/admins'
+import { CustomUser } from '../../pages/api/auth/[...nextauth]'
 
 const Header = () => {
   const { data: session, status } = useSession()
-  const isAdmin = session && session.user?.email && adminUsers.includes(session.user?.email)
+  const user = session?.user as CustomUser
   const router = useRouter()
 
   function isActive(pathname: string) {
@@ -33,7 +33,7 @@ const Header = () => {
         ) : (
           <button onClick={() => signIn()}>login</button>
         )}
-        {isAdmin && (
+        {user?.role === 'ADMIN' && (
           <Link href="/upload-image" legacyBehavior>
             <a data-active={isActive('/upload-image')}>+ upload photo</a>
           </Link>
