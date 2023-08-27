@@ -40,6 +40,7 @@ const options: NextAuthOptions = {
   adapter: {
     ...PrismaAdapter(prisma),
     linkAccount: async ({ ...data }) => {
+      // github provider returns refresh_token_expires_in which prisma adapter fails to interpret
       data.expires_at = Number(data.refresh_token_expires_in) ?? 0
       if (data.refresh_token_expires_in) {
         delete data.refresh_token_expires_in

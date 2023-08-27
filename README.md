@@ -2,6 +2,12 @@
 
 ## Getting started
 
+### Linting (yarn required)
+
+```sh
+npx husky install
+```
+
 ### 1. Download example and install dependencies
 
 ```sh
