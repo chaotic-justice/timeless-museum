@@ -10,7 +10,7 @@
     "build": "next build",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
-    "lint": "eslint components/ pages/ library/ --ext .ts,.tsx",
+    "lint": "lint-staged",
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
@@ -51,6 +51,8 @@
     "eslint-config-next": "^13.4.4",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
     "postcss": "^8.4.28",
     "prettier": "^3.0.2",
     "tailwindcss": "^3.3.2",
@@ -59,5 +61,15 @@
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
+  },
+  "husky": {
+    "hooks": {}
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{md,json}": "prettier --write"
   }
 }
