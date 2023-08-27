@@ -9,6 +9,8 @@ declare namespace NodeJS {
 
     readonly GOOGLE_CLIENT_ID: string
     readonly GOOGLE_CLIENT_SECRET: string
+    readonly GITHUB_ID: string
+    readonly GITHUB_SECRET: string
 
     readonly NEXTAUTH_SECRET: string
     readonly NEXTAUTH_URL: string
