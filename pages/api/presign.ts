@@ -20,10 +20,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
 
     const bucketName = process.env.AWS_S3_BUCKET_NAME
-    const fileName = req.query.file as string
-    const command = new PutObjectCommand({ Bucket: bucketName, Key: fileName })
-    const post = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
-    res.status(200).json(post)
+    const filename = req.query.filename as string
+    const command = new PutObjectCommand({ Bucket: bucketName, Key: filename })
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+    res.status(200).json(url)
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ message: 'Internal Server Error' })

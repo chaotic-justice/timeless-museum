@@ -11,21 +11,26 @@ type FormValues = {
   title: string
   category: string
   description: string
+  filename: string
   images: FileList
 }
+
+const ImageSizeLimit = 1048576 * 5
 
 const Uploaded = () => {
   const router = useRouter()
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>()
 
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
     onSuccess: () => {
-      router.push('/')
+      // router.push('/')
+      console.log('first....')
     },
   })
 
@@ -33,23 +38,33 @@ const Uploaded = () => {
   const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length <= 0) return
     const file = e.target.files[0]
-    const filename = encodeURIComponent(file.name)
-    const res = await fetch(`/api/presign?file=${filename}`)
-    const data = await res.json()
+    const timestamp = Date.now().toString()
+    let filename = encodeURIComponent(file.name)
+    const extIdx = filename.lastIndexOf('.')
+    const fileExtension = filename.substring(extIdx + 1).toLowerCase()
+    console.log('fileExtension', fileExtension)
+    filename = `${filename.substring(0, extIdx)}_${timestamp}.${fileExtension}`
+    setValue('filename', filename)
+    const res = await fetch(`/api/presign?filename=${filename}`)
+    const presignedUrl = await res.json()
     const formData = new FormData()
 
+    if (file.size > ImageSizeLimit) {
+      console.log('size limit exceeded', file.size)
+      return
+    }
     Object.entries({ file }).forEach(([key, value]) => {
       // @ts-ignore
       formData.append(key, value)
     })
 
     toast.promise(
-      fetch(data, {
+      fetch(presignedUrl, {
         method: 'PUT',
         headers: {
           'Content-Type': file.type,
         },
-        body: formData.get('file'),
+        body: file,
       }),
       {
         loading: 'Uploading...',
@@ -60,8 +75,11 @@ const Uploaded = () => {
   }
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
-    const { title, category, description, images } = data
-    const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${images[0]?.name}`
+    const { title, category, description, filename } = data
+    const resizing = await fetch(`/api/imageResize?filename=${filename}`)
+    const res = await resizing.json()
+    console.log('resizing', res)
+    const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${filename}`
     mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
