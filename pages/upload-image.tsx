@@ -29,28 +29,39 @@ const Uploaded = () => {
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
     onSuccess: () => {
-      // router.push('/')
-      console.log('first....')
+      router.push('/')
     },
   })
 
-  // Upload photo function
+  /* 
+  event listener for
+    1. uploading image locally
+    2. creating a presigned url
+    3. making a PUT request to the presigned url passing along the file param
+  */
   const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length <= 0) return
     const file = e.target.files[0]
     const timestamp = Date.now().toString()
+
+    // append timestamp to filename string & to uniquely identify the image key
     let filename = encodeURIComponent(file.name)
     const extIdx = filename.lastIndexOf('.')
     const fileExtension = filename.substring(extIdx + 1).toLowerCase()
-    console.log('fileExtension', fileExtension)
     filename = `${filename.substring(0, extIdx)}_${timestamp}.${fileExtension}`
     setValue('filename', filename)
-    const res = await fetch(`/api/presign?filename=${filename}`)
-    const presignedUrl = await res.json()
-    const formData = new FormData()
 
+    const res = await fetch(`/api/presign?filename=${filename}`)
+    const presignedRes = await res.json()
+    console.log('presignedRes', presignedRes)
+    if (!presignedRes.authorized) {
+      toast.error('not authorized to perform this action')
+      return
+    }
+
+    const formData = new FormData()
     if (file.size > ImageSizeLimit) {
-      console.log('size limit exceeded', file.size)
+      toast.error(`size limit exceeded: ${file.size}`)
       return
     }
     Object.entries({ file }).forEach(([key, value]) => {
@@ -59,7 +70,7 @@ const Uploaded = () => {
     })
 
     toast.promise(
-      fetch(presignedUrl, {
+      fetch(presignedRes.url, {
         method: 'PUT',
         headers: {
           'Content-Type': file.type,
@@ -68,7 +79,7 @@ const Uploaded = () => {
       }),
       {
         loading: 'Uploading...',
-        success: 'Image successfully uploaded!🎉',
+        success: 'Image successfully uploaded to s3 bucket!🎉',
         error: `Upload failed 😥 Please try again`,
       }
     )
@@ -76,13 +87,16 @@ const Uploaded = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async data => {
     const { title, category, description, filename } = data
-    const resizing = await fetch(`/api/imageResize?filename=${filename}`)
-    const res = await resizing.json()
-    console.log('resizing', res)
+    toast.promise(fetch(`/api/imageResize?filename=${filename}`), {
+      loading: 'Resizing...',
+      success: 'Image successfully resized.',
+      error: 'Image resizing failed.',
+    })
     const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${filename}`
     mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
+  // TODO: add validation with zod resolver
   return (
     <Layout>
       <div className="container mx-auto max-w-md py-12">

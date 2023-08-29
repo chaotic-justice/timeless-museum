@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
 import { Readable } from 'stream'
 
-// Configure AWS S3 client
 const s3Client = new S3Client({
   region: process.env.APP_AWS_REGION,
   credentials: {

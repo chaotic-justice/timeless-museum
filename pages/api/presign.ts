@@ -4,12 +4,18 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import { CustomUser, authOptions } from './auth/[...nextauth]'
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+interface ResponseType {
+  url: string | null
+  authorized: boolean
+  message?: string
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const session = await getServerSession(req, res, authOptions)
   const user = session?.user as CustomUser
-  // if (user.role !== 'ADMIN') {
-  //   return res.status(401).json({ data: null })
-  // }
+  if (user?.role !== 'ADMIN') {
+    return res.status(401).json({ url: null, authorized: false })
+  }
   try {
     const s3Client = new S3Client({
       region: process.env.APP_AWS_REGION,
@@ -23,9 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const filename = req.query.filename as string
     const command = new PutObjectCommand({ Bucket: bucketName, Key: filename })
     const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
-    res.status(200).json(url)
+    res.status(200).json({ url, authorized: true })
   } catch (error) {
     console.error('Error:', error)
-    res.status(500).json({ message: 'Internal Server Error' })
+    res.status(500).json({ url: null, authorized: false, message: 'Internal Server Error' })
   }
 }
