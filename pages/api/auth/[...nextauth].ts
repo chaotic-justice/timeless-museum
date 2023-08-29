@@ -21,10 +21,10 @@ export interface CustomUser extends AdapterUser {
   role: Role
 }
 
-const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, options)
+const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, authOptions)
 export default authHandler
 
-const options: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

@@ -38,16 +38,18 @@ const Uploaded = () => {
     const data = await res.json()
     const formData = new FormData()
 
-    Object.entries({ ...data.fields, file }).forEach(([key, value]) => {
+    Object.entries({ file }).forEach(([key, value]) => {
       // @ts-ignore
       formData.append(key, value)
     })
 
     toast.promise(
-      // TODO: convert this fetch block to an api
-      fetch(data.url, {
-        method: 'POST',
-        body: formData,
+      fetch(data, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: formData.get('file'),
       }),
       {
         loading: 'Uploading...',

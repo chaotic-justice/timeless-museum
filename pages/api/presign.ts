@@ -1,48 +1,31 @@
-import aws from 'aws-sdk'
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getToken } from 'next-auth/jwt'
+import { getServerSession } from 'next-auth'
+import { CustomUser, authOptions } from './auth/[...nextauth]'
 
-// migrate this to v3
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const token = await getToken({ req })
-  if (!token || !token.admin) {
-    console.log('JSON Web Token', JSON.stringify(token, null, 2))
-    console.log('admin procedure')
-    return res.status(401).json({
-      data: null,
-    })
-  }
+  const session = await getServerSession(req, res, authOptions)
+  const user = session?.user as CustomUser
+  // if (user.role !== 'ADMIN') {
+  //   return res.status(401).json({ data: null })
+  // }
   try {
-    // 1.
-    const s3 = new aws.S3({
-      accessKeyId: process.env.APP_AWS_ACCESS_KEY,
-      secretAccessKey: process.env.APP_AWS_SECRET_KEY,
+    const s3Client = new S3Client({
       region: process.env.APP_AWS_REGION,
-    })
-
-    // 2.
-    aws.config.update({
-      accessKeyId: process.env.APP_AWS_ACCESS_KEY,
-      secretAccessKey: process.env.APP_AWS_SECRET_KEY,
-      region: process.env.APP_AWS_REGION,
-      signatureVersion: 'v4',
-    })
-
-    // 3.
-    const post = await s3.createPresignedPost({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Fields: {
-        key: req.query.file,
+      credentials: {
+        accessKeyId: process.env.APP_AWS_ACCESS_KEY,
+        secretAccessKey: process.env.APP_AWS_SECRET_KEY,
       },
-      Expires: 600, // seconds
-      Conditions: [
-        ['content-length-range', 0, 5048576], // up to 1 MB
-      ],
     })
 
-    // 4.
-    return res.status(200).json(post)
+    const bucketName = process.env.AWS_S3_BUCKET_NAME
+    const fileName = req.query.file as string
+    const command = new PutObjectCommand({ Bucket: bucketName, Key: fileName })
+    const post = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+    res.status(200).json(post)
   } catch (error) {
-    console.log(error)
+    console.error('Error:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
   }
 }
