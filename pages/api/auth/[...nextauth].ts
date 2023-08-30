@@ -1,25 +1,10 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { NextApiHandler } from 'next'
-import NextAuth, { NextAuthOptions, Session } from 'next-auth'
-import Google from 'next-auth/providers/google'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import GithubProvider from 'next-auth/providers/github'
+import Google from 'next-auth/providers/google'
 
-import { Role } from '@prisma/client'
-import { AdapterUser } from 'next-auth/adapters'
 import prisma from '../../../library/prisma'
-
-interface CustomSession extends Session {
-  user: {
-    role: Role
-    name?: string | null
-    email?: string | null
-    image?: string | null
-  }
-}
-
-export interface CustomUser extends AdapterUser {
-  role: Role
-}
 
 const authHandler: NextApiHandler = (req, res) => NextAuth(req, res, authOptions)
 export default authHandler
@@ -41,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     ...PrismaAdapter(prisma),
     linkAccount: async ({ ...data }) => {
       // github provider returns refresh_token_expires_in which prisma adapter fails to interpret
-      data.expires_at = Number(data.refresh_token_expires_in) ?? 0
+      data.expires_at = Number(data.refresh_token_expires_in)
       if (data.refresh_token_expires_in) {
         delete data.refresh_token_expires_in
       }
@@ -51,7 +36,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        ;(session as CustomSession).user.role = (user as CustomUser).role
+        session.user.role = user.role
       }
       return session
     },

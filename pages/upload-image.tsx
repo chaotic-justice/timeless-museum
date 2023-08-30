@@ -158,3 +158,9 @@ const Uploaded = () => {
 }
 
 export default Uploaded
+
+Uploaded.auth = {
+  role: 'ADMIN',
+  loading: <div>loading...</div>,
+  unauthorized: '/',
+}

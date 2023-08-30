@@ -2,7 +2,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
-import { CustomUser, authOptions } from './auth/[...nextauth]'
+import { authOptions } from './auth/[...nextauth]'
 
 interface ResponseType {
   url: string | null
@@ -12,7 +12,7 @@ interface ResponseType {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const session = await getServerSession(req, res, authOptions)
-  const user = session?.user as CustomUser
+  const user = session?.user
   if (user?.role !== 'ADMIN') {
     return res.status(401).json({ url: null, authorized: false })
   }
