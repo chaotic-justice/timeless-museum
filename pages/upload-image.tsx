@@ -1,11 +1,12 @@
-import React from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
 import Layout from '../components/layout/Layout'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
-import { useRouter } from 'next/router'
 
 type FormValues = {
   title: string
@@ -19,6 +20,20 @@ const ImageSizeLimit = 1048576 * 5
 
 const Uploaded = () => {
   const router = useRouter()
+  const { pathname } = router
+  const { data: sessionData } = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push(`/api/auth/signin?callbackUrl=/${pathname}`)
+    },
+  })
+
+  useEffect(() => {
+    if (sessionData && sessionData.user.role !== 'ADMIN') {
+      router.push('/')
+    }
+  }, [router, sessionData])
+
   const {
     register,
     handleSubmit,
@@ -35,9 +50,9 @@ const Uploaded = () => {
 
   /* 
   event listener for
-    1. uploading image locally
-    2. creating a presigned url
-    3. making a PUT request to the presigned url passing along the file param
+  1. uploading image locally
+  2. creating a presigned url
+  3. making a PUT request to the presigned url passing along the file param
   */
   const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length <= 0) return
@@ -97,6 +112,8 @@ const Uploaded = () => {
   }
 
   // TODO: add validation with zod resolver
+  if (sessionData?.user.role !== 'ADMIN') return undefined
+
   return (
     <Layout>
       <div className="container mx-auto max-w-md py-12">
@@ -158,9 +175,3 @@ const Uploaded = () => {
 }
 
 export default Uploaded
-
-Uploaded.auth = {
-  role: 'ADMIN',
-  loading: <div>loading...</div>,
-  unauthorized: '/',
-}

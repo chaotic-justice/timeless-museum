@@ -5,14 +5,24 @@ import { useRouter } from 'next/router'
 import Layout from '../../components/layout/Layout'
 import { getArtworkById } from '../../library/hooks'
 import prisma from '../../library/prisma'
+import { useSession } from 'next-auth/react'
 
 const ArtPiece = () => {
+  const router = useRouter()
   const {
     query: { id },
-  } = useRouter()
+    asPath,
+  } = router
+  const session = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push(`/api/auth/signin?callbackUrl=${asPath}`)
+    },
+  })
   const { data } = useQuery({ queryKey: ['artwork', id], queryFn: () => getArtworkById(id as string) })
   const artwork = data?.getArtworkById
-  if (!artwork) return
+
+  if (!artwork || !session.data?.user) return undefined
 
   return (
     <Layout>
