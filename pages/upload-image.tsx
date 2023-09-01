@@ -17,6 +17,12 @@ const schema = z.object({
   category: z.string().nonempty('Category is required'),
   description: z.optional(z.string()),
   filename: z.optional(z.string()),
+  uploaded: z
+    .boolean()
+    .default(false)
+    .refine(value => value === true, {
+      message: 'Upload not successful',
+    }),
   images: z.custom<File>(v => v instanceof File, {
     message: 'Image is required',
   }),
@@ -103,8 +109,14 @@ const Uploaded = () => {
       }),
       {
         loading: 'Uploading...',
-        success: 'Image successfully uploaded to s3 bucket!🎉',
-        error: `Upload failed 😥 Please try again`,
+        success: () => {
+          setValue('uploaded', true)
+          return 'Image successfully uploaded to s3 bucket!🎉'
+        },
+        error: () => {
+          setValue('uploaded', false)
+          return `Upload failed 😥 Please try again`
+        },
       }
     )
   }
