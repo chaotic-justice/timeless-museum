@@ -2,11 +2,10 @@
 import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { CustomUser } from '../../pages/api/auth/[...nextauth]'
 
 const Header = () => {
   const { data: session, status } = useSession()
-  const user = session?.user as CustomUser
+  const user = session?.user
   const router = useRouter()
 
   function isActive(pathname: string) {

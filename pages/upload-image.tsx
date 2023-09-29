@@ -1,30 +1,60 @@
-import React from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { useForm, type SubmitHandler } from 'react-hook-form'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import React, { useEffect } from 'react'
+import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
+import { z } from 'zod'
 import Layout from '../components/layout/Layout'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
-import { useRouter } from 'next/router'
 
-type FormValues = {
-  title: string
-  category: string
-  description: string
-  filename: string
-  images: FileList
-}
+const ImageSizeLimit = 1048576 * 5 // maximum image size allowed (before resizing) - 5MB
 
-const ImageSizeLimit = 1048576 * 5
+const schema = z.object({
+  title: z.string().nonempty('Title is required.').max(50),
+  category: z.string().nonempty('Category is required'),
+  description: z.optional(z.string()),
+  filename: z.optional(z.string()),
+  uploaded: z
+    .boolean()
+    .default(false)
+    .refine(value => value === true, {
+      message: 'Upload not successful',
+    }),
+  images: z.custom<File>(v => v instanceof File, {
+    message: 'Image is required',
+  }),
+})
+type Schema = z.infer<typeof schema>
 
 const Uploaded = () => {
   const router = useRouter()
+  const { pathname } = router
+  const { data: sessionData } = useSession({
+    required: true,
+    onUnauthenticated: () => {
+      router.push(`/api/auth/signin?callbackUrl=/${pathname}`)
+    },
+  })
+
+  useEffect(() => {
+    if (sessionData && sessionData.user.role !== 'ADMIN') {
+      router.push('/')
+    }
+  }, [router, sessionData])
+
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
-  } = useForm<FormValues>()
+    control,
+    formState: { errors, isValid },
+  } = useForm<Schema>({
+    mode: 'all',
+    resolver: zodResolver(schema),
+  })
 
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
@@ -37,12 +67,13 @@ const Uploaded = () => {
   event listener for
     1. uploading image locally
     2. creating a presigned url
-    3. making a PUT request to the presigned url passing along the file param
+    3. making a PUT request to the presigned url
   */
-  const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
     if (!e.target.files || e.target.files.length <= 0) return
     const file = e.target.files[0]
     const timestamp = Date.now().toString()
+    onChange(file)
 
     // append timestamp to filename string & to uniquely identify the image key
     let filename = encodeURIComponent(file.name)
@@ -53,7 +84,6 @@ const Uploaded = () => {
 
     const res = await fetch(`/api/presign?filename=${filename}`)
     const presignedRes = await res.json()
-    console.log('presignedRes', presignedRes)
     if (!presignedRes.authorized) {
       toast.error('not authorized to perform this action')
       return
@@ -79,13 +109,19 @@ const Uploaded = () => {
       }),
       {
         loading: 'Uploading...',
-        success: 'Image successfully uploaded to s3 bucket!🎉',
-        error: `Upload failed 😥 Please try again`,
+        success: () => {
+          setValue('uploaded', true)
+          return 'Image successfully uploaded to s3 bucket!🎉'
+        },
+        error: () => {
+          setValue('uploaded', false)
+          return `Upload failed 😥 Please try again`
+        },
       }
     )
   }
 
-  const onSubmit: SubmitHandler<FormValues> = async data => {
+  const onSubmit: SubmitHandler<Schema> = async data => {
     const { title, category, description, filename } = data
     toast.promise(fetch(`/api/imageResize?filename=${filename}`), {
       loading: 'Resizing...',
@@ -96,7 +132,8 @@ const Uploaded = () => {
     mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
-  // TODO: add validation with zod resolver
+  if (sessionData?.user.role !== 'ADMIN') return undefined
+
   return (
     <Layout>
       <div className="container mx-auto max-w-md py-12">
@@ -106,55 +143,68 @@ const Uploaded = () => {
           <label className="block">
             <span className="text-gray-700">Title</span>
             <input
+              {...register('title')}
               placeholder="Title"
-              {...register('title', { required: true })}
-              name="title"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
+            {errors.title && <p className="text-red-500">{errors.title.message}</p>}
           </label>
           <label className="block">
             <span className="text-gray-700">Description</span>
             <input
               placeholder="Description"
-              {...register('description', { required: false })}
+              {...register('description')}
               name="description"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
+            {errors.description && <p className="text-red-500">{errors.description.message}</p>}
           </label>
           <label className="block">
             <span className="text-gray-700">Category</span>
             <input
               placeholder="Name"
-              {...register('category', { required: true })}
+              {...register('category')}
               name="category"
               type="text"
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             />
+            {errors.category && <p className="text-red-500">{errors.category.message}</p>}
           </label>
           <label className="block">
             <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
-            <input
-              {...register('images', { required: true })}
-              onChange={uploadPhoto}
-              type="file"
-              accept="image/*"
+            <Controller
               name="images"
+              control={control}
+              render={({ field: { ref, onBlur, onChange } }) => (
+                <input
+                  onBlur={onBlur}
+                  onChange={e => uploadPhoto(e, onChange)}
+                  ref={ref}
+                  type="file"
+                  accept="image/*"
+                />
+              )}
             />
+            {errors.images && <p className="text-red-500">{errors.images.message}</p>}
           </label>
           <button
-            disabled={false}
+            disabled={!isValid}
             type="submit"
-            className="my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600"
+            className={`my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
+              !isValid && 'opacity-50 cursor-not-allowed'
+            }`}
           >
-            <span>add image</span>
+            <span>submit</span>
           </button>
         </form>
-        <h3> {errors.description && errors.description.message}</h3>
       </div>
     </Layout>
   )
 }
 
+// TODO: show image preview
 export default Uploaded
+
+// this post unblocked me on providing a ref to the image input: https://github.com/orgs/react-hook-form/discussions/10091
