@@ -7,10 +7,10 @@ import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
 import { z } from 'zod'
 import Layout from '../components/layout/Layout'
+import { ImageSizeLimit } from '../library/constants'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
-
-const ImageSizeLimit = 1048576 * 5 // maximum image size allowed (before resizing) - 5MB
+import FilesDropper from '../components/userInterfaces/filesDropper'
 
 const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
@@ -136,9 +136,9 @@ const Uploaded = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto max-w-md py-12">
+      <div className="container mx-auto max-w-3xl py-12">
         <Toaster />
-        <h1 className="text-3xl font-medium my-5">Add a new image</h1>
+        <h1 className="text-3xl text-center font-medium my-5">Add a new image</h1>
         <form className="grid grid-cols-1 gap-y-6 shadow-lg p-8 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
           <label className="block">
             <span className="text-gray-700">Title</span>
@@ -189,6 +189,7 @@ const Uploaded = () => {
             />
             {errors.images && <p className="text-red-500">{errors.images.message}</p>}
           </label>
+          <FilesDropper />
           <button
             disabled={!isValid}
             type="submit"
