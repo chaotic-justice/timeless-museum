@@ -1,6 +1,6 @@
 import { Button } from 'antd'
 import Image from 'next/image'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { GoTrash } from 'react-icons/go'
@@ -33,17 +33,16 @@ const FilesDropper: React.FC = () => {
     setFiles(prevFiles => prevFiles.filter(f => f !== file))
   }
 
-  const rejectionErrors = useMemo(() => {
-    return fileRejections.map(({ file, errors }) => {
+  useEffect(() => {
+    const rejectionErrors = fileRejections.map(({ file, errors }) => {
       const errorMessage = errors[0].message
       const imageName = file.name
       return `${errorMessage} - ${imageName}`
     })
+    rejectionErrors.forEach(errorMessage => {
+      toast.error(errorMessage, { duration: 2500 })
+    })
   }, [fileRejections])
-
-  rejectionErrors.forEach(errorMessage => {
-    toast.error(errorMessage, { duration: 2500 })
-  })
 
   const filePreviews = files.map((file, idx) => (
     <div key={file.name + '_' + idx} className="relative w-32 h-32 m-2">
@@ -59,7 +58,7 @@ const FilesDropper: React.FC = () => {
         type="primary"
         icon={<GoTrash />}
         onClick={() => removeFile(file)}
-        className="absolute top-1 right-1 text-white h-6"
+        className="absolute top-1 right-1"
       />
     </div>
   ))
@@ -68,15 +67,17 @@ const FilesDropper: React.FC = () => {
     <div className="text-center">
       <div
         {...getRootProps()}
-        className={`p-8 m-4 border-2 bg-stone-200 ${
+        className={`p-8 m-4 border-2 bg-gray-200 ${files.length === MAX_FILES_CAP && 'cursor-not-allowed opacity-50'} ${
           isDragActive ? 'border-green-500' : isFocused ? 'border-blue-500' : 'border-gray-300'
         }`}
       >
         <input {...getInputProps()} />
         {isDragActive ? (
           <p className="text-green-500">Drop the images here...</p>
-        ) : (
+        ) : files.length < MAX_FILES_CAP ? (
           <p>Drag and drop up to {MAX_FILES_CAP} images here, or click to select.</p>
+        ) : (
+          <p>Remove an image to proceed..</p>
         )}
       </div>
       <div className="flex flex-wrap justify-center">{filePreviews}</div>
