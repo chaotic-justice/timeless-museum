@@ -1,19 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { IMAGE_MAX_SIZE, MAX_FILES_CAP } from '../../library/constants'
 
 type FilesDropperProps = {
-  onChange: (...event: any[]) => void
   files: File[]
+  fields: any[]
+  replace: (obj: object[]) => void
 }
 
-const FilesDropper: React.FC<FilesDropperProps> = ({ onChange, files, ...rest }) => {
+const FilesDropper: React.FC<FilesDropperProps> = ({ files, fields, replace, ...rest }) => {
   const onDrop = useCallback(
     (droppedFiles: File[]) => {
-      onChange([...files, ...droppedFiles].slice(0, MAX_FILES_CAP))
+      replace([...files, ...droppedFiles].slice(0, MAX_FILES_CAP))
     },
-    [files, onChange]
+    [files, replace]
   )
   const { getRootProps, getInputProps, fileRejections, isFocused, isDragActive } = useDropzone({
     onDrop,
@@ -24,19 +25,8 @@ const FilesDropper: React.FC<FilesDropperProps> = ({ onChange, files, ...rest })
     accept: {
       'image/*': [],
     },
-    disabled: files.length >= MAX_FILES_CAP,
+    disabled: fields.length >= MAX_FILES_CAP,
   })
-
-  // useEffect(() => {
-  //   setFiles(prevFiles => [...prevFiles, ...acceptedFiles].slice(0, MAX_FILES_CAP))
-  // }, [acceptedFiles])
-
-  // useEffect(() => {
-  //   // Clean up files when component unmounts
-  //   return () => {
-  //     setFiles([])
-  //   }
-  // }, [])
 
   useEffect(() => {
     const rejectionErrors = fileRejections.map(({ file, errors }) => {
@@ -53,13 +43,13 @@ const FilesDropper: React.FC<FilesDropperProps> = ({ onChange, files, ...rest })
     <div
       {...getRootProps({ onClick: e => e.preventDefault(), ...rest })}
       className={`p-8 m-4 border-2 bg-gray-200 ${
-        files.length >= MAX_FILES_CAP ? 'cursor-not-allowed opacity-50 border-solid' : 'cursor-pointer border-dotted'
+        fields.length >= MAX_FILES_CAP ? 'cursor-not-allowed opacity-50 border-solid' : 'cursor-pointer border-dotted'
       } ${isDragActive ? 'border-green-700' : isFocused ? 'border-blue-500' : 'border-green-500'}`}
     >
-      <input {...getInputProps({ disabled: files.length >= MAX_FILES_CAP })} />
+      <input {...getInputProps({ disabled: fields.length >= MAX_FILES_CAP })} />
       {isDragActive ? (
         <p className="text-green-500">Drop the images here...</p>
-      ) : files.length < MAX_FILES_CAP ? (
+      ) : fields.length < MAX_FILES_CAP ? (
         <p>Drag and drop up to {MAX_FILES_CAP} images here, or click to select.</p>
       ) : (
         <p>Remove an image to proceed..</p>

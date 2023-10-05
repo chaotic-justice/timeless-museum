@@ -3,14 +3,15 @@ import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
-import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
+import { Controller, useForm, type SubmitHandler, useFieldArray } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
-import { z } from 'zod'
+import { any, z } from 'zod'
 import Layout from '../components/layout/Layout'
 import FilesDropper from '../components/userInterfaces/filesDropper'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
 import ImagePreviews from '../components/userInterfaces/imagePreviews'
+import { generateFileName } from '../library/utils'
 
 const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
@@ -25,14 +26,15 @@ const schema = z.object({
     }),
   images: z
     .array(
-      z.custom<File>(v => v instanceof File, {
-        message: 'Invalid file type',
-      })
-      // z.instanceof(File)
+      // z.custom<File>(v => v instanceof File, {
+      //   message: 'Invalid file type',
+      // })
+      z.any()
     )
     .nonempty('Images are required'),
 })
 export type FormSchema = z.infer<typeof schema>
+// type Image = z.infer<typeof schema>['images'][number]
 
 const Uploaded = () => {
   const router = useRouter()
@@ -57,14 +59,17 @@ const Uploaded = () => {
     control,
     getValues,
     watch,
-    formState: { errors, isValid, defaultValues },
+    formState: { errors, isValid, isDirty, defaultValues },
   } = useForm<FormSchema>({
     defaultValues: { images: [] },
-    mode: 'all',
+    mode: 'onChange',
     resolver: zodResolver(schema),
   })
   const images = watch('images')
-  const [filenames, setFilenames] = useState<string[]>([])
+  const { fields, remove, replace } = useFieldArray({
+    name: 'images',
+    control,
+  })
 
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
@@ -72,6 +77,13 @@ const Uploaded = () => {
       router.push('/')
     },
   })
+
+  useEffect(() => {
+    // Clean up files when component unmounts
+    return () => {
+      remove()
+    }
+  }, [remove])
 
   /* 
   event listener for
@@ -81,16 +93,7 @@ const Uploaded = () => {
   */
   const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
     if (!e.target.files || e.target.files.length <= 0) return
-    const file = e.target.files[0]
-    const timestamp = Date.now().toString()
     onChange(e.target.files)
-
-    // append timestamp to filename string & to uniquely identify the image key
-    let filename = encodeURIComponent(file.name)
-    const extIdx = filename.lastIndexOf('.')
-    const fileExtension = filename.substring(extIdx + 1).toLowerCase()
-    filename = `${filename.substring(0, extIdx)}_${timestamp}.${fileExtension}`
-    setValue('filenames', filename)
 
     // const res = await fetch(`/api/presign?filename=${filename}`)
     // const presignedRes = await res.json()
@@ -132,14 +135,17 @@ const Uploaded = () => {
   }
 
   const debugging = () => {
-    console.log('defaultValues', defaultValues)
-    const img = getValues('images')
-    console.log('img', img)
+    console.log('fields', fields)
+    fields.forEach(({ path: filePath, id: fileId }) => {
+      const extIdx = filePath.lastIndexOf('.')
+      const extension = filePath.substring(extIdx + 1).toLowerCase()
+      const filename = generateFileName(extension, fileId)
+      console.log('filename', filename)
+    })
   }
 
   const onSubmit: SubmitHandler<FormSchema> = async data => {
-    const { title, category, description, filenames } = data
-    console.log('data.', data.images)
+    const { title, category, description, images, filenames } = data
     // toast.promise(fetch(`/api/imageResize?filename=${filename}`), {
     //   loading: 'Resizing...',
     //   success: 'Image successfully resized.',
@@ -192,17 +198,17 @@ const Uploaded = () => {
           <label className="block">
             <Controller
               name="images"
-              render={({ field: { onChange, ...rest } }) => (
-                <FilesDropper onChange={onChange} files={images} {...rest} />
+              render={({ field: { ...rest } }) => (
+                <FilesDropper files={images} replace={replace} fields={fields} {...rest} />
               )}
               control={control}
             />
             {errors.images && <p className="text-red-500">{errors.images.message}</p>}
           </label>
-          <ImagePreviews setValues={setValue} files={images} />
+          <ImagePreviews files={images} remove={remove} />
           <button onClick={debugging}>debugging</button>
           <button
-            disabled={!isValid}
+            disabled={!isValid || !isDirty}
             type="submit"
             className={`my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
               !isValid && 'opacity-50 cursor-not-allowed'

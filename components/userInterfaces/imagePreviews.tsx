@@ -2,19 +2,11 @@ import { Button } from 'antd'
 import Image from 'next/image'
 import React from 'react'
 import { GoTrash } from 'react-icons/go'
-import { FormSchema } from '../../pages/upload-image'
-import { UseFormSetValue } from 'react-hook-form'
 
-const ImagePreviews: React.FC<{ files: File[]; setValues: UseFormSetValue<FormSchema> }> = ({ files, setValues }) => {
-  const removeFile = (e: React.MouseEvent<HTMLElement, MouseEvent>, file: File) => {
-    e.preventDefault()
-    // TODO: replace setvalue with onchange?
-    setValues(
-      'images',
-      files.filter(f => f !== file)
-    )
-  }
+type Props = { files: File[]; remove: (index?: number | number[]) => void }
 
+const ImagePreviews: React.FC<Props> = ({ files, remove }) => {
+  console.log('files', files)
   const filePreviews = files.map((file, idx) => (
     <div key={file.name + '_' + idx} className="relative w-32 h-32 m-2">
       <Image
@@ -24,13 +16,7 @@ const ImagePreviews: React.FC<{ files: File[]; setValues: UseFormSetValue<FormSc
         height={300}
         className="object-cover w-full h-full rounded-lg"
       />
-      <Button
-        danger
-        type="primary"
-        icon={<GoTrash />}
-        onClick={e => removeFile(e, file)}
-        className="absolute top-1 right-1"
-      />
+      <Button danger type="primary" icon={<GoTrash />} onClick={() => remove(idx)} className="absolute top-1 right-1" />
     </div>
   ))
 
