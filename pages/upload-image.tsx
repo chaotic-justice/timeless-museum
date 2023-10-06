@@ -2,16 +2,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import { Controller, useForm, type SubmitHandler, useFieldArray } from 'react-hook-form'
-import toast, { Toaster } from 'react-hot-toast'
-import { any, z } from 'zod'
+import React, { useEffect } from 'react'
+import { Controller, useFieldArray, useForm, type SubmitHandler } from 'react-hook-form'
+import { Toaster } from 'react-hot-toast'
+import { z } from 'zod'
 import Layout from '../components/layout/Layout'
 import FilesDropper from '../components/userInterfaces/filesDropper'
+import ImagePreviews from '../components/userInterfaces/imagePreviews'
+import { IMAGE_MAX_SIZE } from '../library/constants'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
-import ImagePreviews from '../components/userInterfaces/imagePreviews'
-import { generateFileName } from '../library/utils'
 
 const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
@@ -26,15 +26,22 @@ const schema = z.object({
     }),
   images: z
     .array(
-      // z.custom<File>(v => v instanceof File, {
-      //   message: 'Invalid file type',
-      // })
-      z.any()
+      z.object({
+        image: z
+          .custom<FileList>()
+          .transform(file => file.length > 0 && file.item(0))
+          .refine(file => !file || (!!file && file.size <= IMAGE_MAX_SIZE), {
+            message: 'Maximum 5MB',
+          })
+          .refine(file => !file || (!!file && file.type?.startsWith('image')), {
+            message: 'Only images are allowed to be sent.',
+          }),
+      })
     )
     .nonempty('Images are required'),
 })
 export type FormSchema = z.infer<typeof schema>
-// type Image = z.infer<typeof schema>['images'][number]
+export type ImageObj = z.infer<typeof schema>['images'][number]
 
 const Uploaded = () => {
   const router = useRouter()
@@ -59,7 +66,7 @@ const Uploaded = () => {
     control,
     getValues,
     watch,
-    formState: { errors, isValid, isDirty, defaultValues },
+    formState: { errors, isValid, isDirty },
   } = useForm<FormSchema>({
     defaultValues: { images: [] },
     mode: 'onChange',
@@ -135,13 +142,14 @@ const Uploaded = () => {
   }
 
   const debugging = () => {
-    console.log('fields', fields)
-    fields.forEach(({ path: filePath, id: fileId }) => {
-      const extIdx = filePath.lastIndexOf('.')
-      const extension = filePath.substring(extIdx + 1).toLowerCase()
-      const filename = generateFileName(extension, fileId)
+    for (let i = 0; i < images.length; i++) {
+      const { image } = images[i]
+      if (!image) {
+        continue
+      }
+      const filename = `${fields[i].id}.${image.type.split('/')[1]}`
       console.log('filename', filename)
-    })
+    }
   }
 
   const onSubmit: SubmitHandler<FormSchema> = async data => {
