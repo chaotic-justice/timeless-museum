@@ -13,12 +13,12 @@ const s3Client = new S3Client({
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { filename } = req.query
+    const { filePath } = req.query
 
     // Fetch original image from S3
     const getObjectCommand = new GetObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: filename as string,
+      Key: filePath as string,
     })
     const originalImage = await s3Client.send(getObjectCommand)
     if (!originalImage.Body) {
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Upload the resized image back to S3
     const putObjectCommand = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
-      Key: filename as string,
+      Key: filePath as string,
       Body: resizedImage,
       ContentType: originalImage.ContentType,
     })

@@ -4,26 +4,30 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { Controller, useFieldArray, useForm, type SubmitHandler } from 'react-hook-form'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { z } from 'zod'
 import Layout from '../components/layout/Layout'
 import FilesDropper from '../components/userInterfaces/filesDropper'
 import ImagePreviews from '../components/userInterfaces/imagePreviews'
-import { IMAGE_MAX_SIZE } from '../library/constants'
+import { IMAGE_MAX_SIZE, RESIZING_THRESHOLD } from '../library/constants'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
+
+type ResizingObj = {
+  filePath: string
+  resize: boolean
+}
 
 const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
   category: z.string().nonempty('Category is required'),
   description: z.optional(z.string()),
-  filenames: z.optional(z.string()),
-  uploaded: z
-    .boolean()
-    .default(false)
-    .refine(value => value === true, {
-      message: 'Upload not successful',
-    }),
+  // uploaded: z
+  //   .boolean()
+  //   .default(false)
+  //   .refine(value => value === true, {
+  //     message: 'Upload not successful',
+  //   }),
   images: z
     .array(
       z.object({
@@ -77,7 +81,6 @@ const Uploaded = () => {
     name: 'images',
     control,
   })
-
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
     onSuccess: () => {
@@ -92,73 +95,78 @@ const Uploaded = () => {
     }
   }, [remove])
 
-  /* 
-  event listener for
-    1. uploading image locally
-    2. creating a presigned url
-    3. making a PUT request to the presigned url
-  */
-  const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    if (!e.target.files || e.target.files.length <= 0) return
-    onChange(e.target.files)
-
-    // const res = await fetch(`/api/presign?filename=${filename}`)
-    // const presignedRes = await res.json()
-    // if (!presignedRes.authorized) {
-    //   toast.error('not authorized to perform this action')
-    //   return
-    // }
-
-    // const formData = new FormData()
-    // if (file.size > IMAGE_MAX_SIZE) {
-    //   toast.error(`size limit exceeded: ${file.size}`)
-    //   return
-    // }
-    // Object.entries({ file }).forEach(([key, value]) => {
-    //   // @ts-ignore
-    //   formData.append(key, value)
-    // })
-
-    // toast.promise(
-    //   fetch(presignedRes.url, {
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': file.type,
-    //     },
-    //     body: file,
-    //   }),
-    //   {
-    //     loading: 'Uploading...',
-    //     success: () => {
-    //       setValue('uploaded', true)
-    //       return 'Image successfully uploaded to s3 bucket!🎉'
-    //     },
-    //     error: () => {
-    //       setValue('uploaded', false)
-    //       return `Upload failed 😥 Please try again`
-    //     },
-    //   }
-    // )
-  }
-
-  const debugging = () => {
-    for (let i = 0; i < images.length; i++) {
-      const { image } = images[i]
-      if (!image) {
-        continue
+  const resizeImages = async (resizing: ResizingObj[]) => {
+    const resizingPromises = resizing.map(async item => {
+      if (item.resize) {
+        const resizingPromise = await fetch(`/api/imageResize?filePath=${item.filePath}`)
+        return resizingPromise.ok
       }
-      const filename = `${fields[i].id}.${image.type.split('/')[1]}`
-      console.log('filename', filename)
-    }
+      return true
+    })
+
+    toast.promise(Promise.all(resizingPromises), {
+      loading: 'Resizing...',
+      success: () => {
+        return 'All images successfully resized!🎉'
+      },
+      error: () => {
+        return `Resizing failed for some images 😥 Please try again`
+      },
+    })
   }
 
   const onSubmit: SubmitHandler<FormSchema> = async data => {
-    const { title, category, description, images, filenames } = data
-    // toast.promise(fetch(`/api/imageResize?filename=${filename}`), {
-    //   loading: 'Resizing...',
-    //   success: 'Image successfully resized.',
-    //   error: 'Image resizing failed.',
-    // })
+    const { title, category, description, images: formImages } = data
+
+    console.log('formImages', formImages)
+    const dirName = 'local'
+    const resizing = new Array(images.length).fill(false).map(v => ({ filePath: '', resize: v }))
+    const promises = images
+      .filter(v => Boolean(v))
+      .map(async (item, i) => {
+        const { image } = item
+        if (!image) {
+          return null
+        }
+        const filename = `${fields[i].id}.${image.type.split('/')[1]}`
+        const filePath = `${dirName}/${filename}`
+        resizing[i].filePath = filePath
+        resizing[i].resize = image.size > RESIZING_THRESHOLD
+        const presignedPromise = await fetch(`/api/presign?filePath=${filePath}`)
+        const presignedRes = await presignedPromise.json()
+        if (!presignedRes.authorized) {
+          toast.error('Not authorized to perform this action')
+          return null
+        }
+
+        return fetch(presignedRes.url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': image.type,
+          },
+          body: image,
+        })
+          .then(() => {
+            return true
+          })
+          .catch(() => {
+            return false
+          })
+      })
+
+    toast.promise(Promise.all(promises), {
+      loading: 'Uploading...',
+      success: () => {
+        // setValue('uploaded', true)
+        resizeImages(resizing)
+        return 'All images successfully uploaded to s3 bucket!🎉'
+      },
+      error: () => {
+        // setValue('uploaded', false)
+        return `Upload failed for some images 😥 Please try again`
+      },
+    })
+
     // const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${filename}`
     // mutate({ title, category, description, imageUrls: [imageUrl] })
   }
@@ -214,7 +222,6 @@ const Uploaded = () => {
             {errors.images && <p className="text-red-500">{errors.images.message}</p>}
           </label>
           <ImagePreviews files={images} remove={remove} />
-          <button onClick={debugging}>debugging</button>
           <button
             disabled={!isValid || !isDirty}
             type="submit"

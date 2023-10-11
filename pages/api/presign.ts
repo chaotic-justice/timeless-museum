@@ -26,8 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     })
 
     const bucketName = process.env.AWS_S3_BUCKET_NAME
-    const filename = req.query.filename as string
-    const command = new PutObjectCommand({ Bucket: bucketName, Key: filename })
+    const filePath = req.query.filePath as string
+    const command = new PutObjectCommand({ Bucket: bucketName, Key: filePath })
     const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
     res.status(200).json({ url, authorized: true })
   } catch (error) {
