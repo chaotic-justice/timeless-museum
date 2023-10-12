@@ -22,12 +22,6 @@ const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
   category: z.string().nonempty('Category is required'),
   description: z.optional(z.string()),
-  // uploaded: z
-  //   .boolean()
-  //   .default(false)
-  //   .refine(value => value === true, {
-  //     message: 'Upload not successful',
-  //   }),
   images: z
     .array(
       z.object({
@@ -50,7 +44,7 @@ const Uploaded = () => {
   const { data: sessionData } = useSession({
     required: true,
     onUnauthenticated: () => {
-      router.push(`/api/auth/signin?callbackUrl=/${pathname}`)
+      router.push(`/api/auth/signin?callbackUrl=${pathname}`)
     },
   })
 
