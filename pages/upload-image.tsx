@@ -217,7 +217,7 @@ const Uploaded = () => {
           <button
             disabled={!isValid || !isDirty}
             type="submit"
-            className={`my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
+            className={`my-4 md:w-2/12 md:mx-auto capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
               !isValid && 'opacity-50 cursor-not-allowed'
             }`}
           >
