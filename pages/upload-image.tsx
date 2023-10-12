@@ -2,20 +2,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Controller, useFieldArray, useForm, type SubmitHandler } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
 import { z } from 'zod'
 import Layout from '../components/layout/Layout'
 import FilesDropper from '../components/userInterfaces/filesDropper'
 import ImagePreviews from '../components/userInterfaces/imagePreviews'
-import { IMAGE_MAX_SIZE, RESIZING_THRESHOLD } from '../library/constants'
+import { RESIZING_THRESHOLD } from '../library/constants'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
 
 type ResizingObj = {
   filePath: string
-  resize: boolean
+  resizable: boolean
 }
 
 const schema = z.object({
@@ -34,9 +34,6 @@ const schema = z.object({
         image: z
           .custom<FileList>()
           .transform(file => file.length > 0 && file.item(0))
-          .refine(file => !file || (!!file && file.size <= IMAGE_MAX_SIZE), {
-            message: 'Maximum 5MB',
-          })
           .refine(file => !file || (!!file && file.type?.startsWith('image')), {
             message: 'Only images are allowed to be sent.',
           }),
@@ -66,9 +63,7 @@ const Uploaded = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     control,
-    getValues,
     watch,
     formState: { errors, isValid, isDirty },
   } = useForm<FormSchema>({
@@ -95,9 +90,10 @@ const Uploaded = () => {
     }
   }, [remove])
 
-  const resizeImages = async (resizing: ResizingObj[]) => {
-    const resizingPromises = resizing.map(async item => {
-      if (item.resize) {
+  const resizeImages = async (resizableItems: ResizingObj[], data: FormSchema) => {
+    const { title, category, description } = data
+    const resizingPromises = resizableItems.map(async item => {
+      if (item.resizable) {
         const resizingPromise = await fetch(`/api/imageResize?filePath=${item.filePath}`)
         return resizingPromise.ok
       }
@@ -107,6 +103,10 @@ const Uploaded = () => {
     toast.promise(Promise.all(resizingPromises), {
       loading: 'Resizing...',
       success: () => {
+        const imageUrls = resizableItems.map(
+          item => `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${item.filePath}`
+        )
+        mutate({ title, category, description, imageUrls })
         return 'All images successfully resized!🎉'
       },
       error: () => {
@@ -116,11 +116,8 @@ const Uploaded = () => {
   }
 
   const onSubmit: SubmitHandler<FormSchema> = async data => {
-    const { title, category, description, images: formImages } = data
-
-    console.log('formImages', formImages)
     const dirName = 'local'
-    const resizing = new Array(images.length).fill(false).map(v => ({ filePath: '', resize: v }))
+    const resizableItems = new Array(images.length).fill(false).map(v => ({ filePath: '', resizable: v }))
     const promises = images
       .filter(v => Boolean(v))
       .map(async (item, i) => {
@@ -130,8 +127,8 @@ const Uploaded = () => {
         }
         const filename = `${fields[i].id}.${image.type.split('/')[1]}`
         const filePath = `${dirName}/${filename}`
-        resizing[i].filePath = filePath
-        resizing[i].resize = image.size > RESIZING_THRESHOLD
+        resizableItems[i].filePath = filePath
+        resizableItems[i].resizable = image.size > RESIZING_THRESHOLD
         const presignedPromise = await fetch(`/api/presign?filePath=${filePath}`)
         const presignedRes = await presignedPromise.json()
         if (!presignedRes.authorized) {
@@ -157,18 +154,13 @@ const Uploaded = () => {
     toast.promise(Promise.all(promises), {
       loading: 'Uploading...',
       success: () => {
-        // setValue('uploaded', true)
-        resizeImages(resizing)
+        resizeImages(resizableItems, data)
         return 'All images successfully uploaded to s3 bucket!🎉'
       },
       error: () => {
-        // setValue('uploaded', false)
         return `Upload failed for some images 😥 Please try again`
       },
     })
-
-    // const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${filename}`
-    // mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
   if (sessionData?.user.role !== 'ADMIN') return undefined

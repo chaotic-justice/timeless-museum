@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
-import { IMAGE_MAX_SIZE, MAX_FILES_CAP } from '../../library/constants'
+import { IMAGE_MAX_SIZE, IMAGE_MIN_SIZE, MAX_FILES_CAP } from '../../library/constants'
 import { ImageObj } from '../../pages/upload-image'
 
 type FilesDropperProps = {
@@ -23,7 +23,7 @@ const FilesDropper: React.FC<FilesDropperProps> = ({ files, fields, replace, ...
     onDrop,
     multiple: true,
     maxFiles: MAX_FILES_CAP,
-    // minSize: IMAGE_MIN_SIZE,
+    minSize: IMAGE_MIN_SIZE,
     maxSize: IMAGE_MAX_SIZE,
     accept: {
       'image/*': [],
