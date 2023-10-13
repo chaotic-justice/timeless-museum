@@ -2,32 +2,41 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
-import { Controller, useForm, type SubmitHandler } from 'react-hook-form'
+import { useEffect } from 'react'
+import { Controller, useFieldArray, useForm, type SubmitHandler } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
 import { z } from 'zod'
 import Layout from '../components/layout/Layout'
+import FilesDropper from '../components/userInterfaces/filesDropper'
+import ImagePreviews from '../components/userInterfaces/imagePreviews'
+import { RESIZING_THRESHOLD } from '../library/constants'
 import { MutationCreateArtworkArgs } from '../library/gql/graphql'
 import { createArtwork } from '../library/hooks'
 
-const ImageSizeLimit = 1048576 * 5 // maximum image size allowed (before resizing) - 5MB
+type ResizingObj = {
+  filePath: string
+  resizable: boolean
+}
 
 const schema = z.object({
   title: z.string().nonempty('Title is required.').max(50),
   category: z.string().nonempty('Category is required'),
   description: z.optional(z.string()),
-  filename: z.optional(z.string()),
-  uploaded: z
-    .boolean()
-    .default(false)
-    .refine(value => value === true, {
-      message: 'Upload not successful',
-    }),
-  images: z.custom<File>(v => v instanceof File, {
-    message: 'Image is required',
-  }),
+  images: z
+    .array(
+      z.object({
+        image: z
+          .custom<FileList>()
+          .transform(file => file.length > 0 && file.item(0))
+          .refine(file => !file || (!!file && file.type?.startsWith('image')), {
+            message: 'Only images are allowed to be sent.',
+          }),
+      })
+    )
+    .nonempty('Images are required'),
 })
-type Schema = z.infer<typeof schema>
+export type FormSchema = z.infer<typeof schema>
+export type ImageObj = z.infer<typeof schema>['images'][number]
 
 const Uploaded = () => {
   const router = useRouter()
@@ -35,7 +44,7 @@ const Uploaded = () => {
   const { data: sessionData } = useSession({
     required: true,
     onUnauthenticated: () => {
-      router.push(`/api/auth/signin?callbackUrl=/${pathname}`)
+      router.push(`/api/auth/signin?callbackUrl=${pathname}`)
     },
   })
 
@@ -48,14 +57,19 @@ const Uploaded = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     control,
-    formState: { errors, isValid },
-  } = useForm<Schema>({
-    mode: 'all',
+    watch,
+    formState: { errors, isValid, isDirty },
+  } = useForm<FormSchema>({
+    defaultValues: { images: [] },
+    mode: 'onChange',
     resolver: zodResolver(schema),
   })
-
+  const images = watch('images')
+  const { fields, remove, replace } = useFieldArray({
+    name: 'images',
+    control,
+  })
   const { mutate } = useMutation({
     mutationFn: async (args: MutationCreateArtworkArgs) => createArtwork(args),
     onSuccess: () => {
@@ -63,82 +77,93 @@ const Uploaded = () => {
     },
   })
 
-  /* 
-  event listener for
-    1. uploading image locally
-    2. creating a presigned url
-    3. making a PUT request to the presigned url
-  */
-  const uploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>, onChange: (...event: any[]) => void) => {
-    if (!e.target.files || e.target.files.length <= 0) return
-    const file = e.target.files[0]
-    const timestamp = Date.now().toString()
-    onChange(file)
-
-    // append timestamp to filename string & to uniquely identify the image key
-    let filename = encodeURIComponent(file.name)
-    const extIdx = filename.lastIndexOf('.')
-    const fileExtension = filename.substring(extIdx + 1).toLowerCase()
-    filename = `${filename.substring(0, extIdx)}_${timestamp}.${fileExtension}`
-    setValue('filename', filename)
-
-    const res = await fetch(`/api/presign?filename=${filename}`)
-    const presignedRes = await res.json()
-    if (!presignedRes.authorized) {
-      toast.error('not authorized to perform this action')
-      return
+  useEffect(() => {
+    // Clean up files when component unmounts
+    return () => {
+      remove()
     }
+  }, [remove])
 
-    const formData = new FormData()
-    if (file.size > ImageSizeLimit) {
-      toast.error(`size limit exceeded: ${file.size}`)
-      return
-    }
-    Object.entries({ file }).forEach(([key, value]) => {
-      // @ts-ignore
-      formData.append(key, value)
+  const resizeImages = async (resizableItems: ResizingObj[], data: FormSchema) => {
+    const { title, category, description } = data
+    const resizingPromises = resizableItems.map(async item => {
+      if (item.resizable) {
+        const resizingPromise = await fetch(`/api/imageResize?filePath=${item.filePath}`)
+        return resizingPromise.ok
+      }
+      return true
     })
 
-    toast.promise(
-      fetch(presignedRes.url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': file.type,
-        },
-        body: file,
-      }),
-      {
-        loading: 'Uploading...',
-        success: () => {
-          setValue('uploaded', true)
-          return 'Image successfully uploaded to s3 bucket!🎉'
-        },
-        error: () => {
-          setValue('uploaded', false)
-          return `Upload failed 😥 Please try again`
-        },
-      }
-    )
+    toast.promise(Promise.all(resizingPromises), {
+      loading: 'Resizing...',
+      success: () => {
+        const imageUrls = resizableItems.map(
+          item => `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${item.filePath}`
+        )
+        mutate({ title, category, description, imageUrls })
+        return 'All images successfully resized!🎉'
+      },
+      error: () => {
+        return `Resizing failed for some images 😥 Please try again`
+      },
+    })
   }
 
-  const onSubmit: SubmitHandler<Schema> = async data => {
-    const { title, category, description, filename } = data
-    toast.promise(fetch(`/api/imageResize?filename=${filename}`), {
-      loading: 'Resizing...',
-      success: 'Image successfully resized.',
-      error: 'Image resizing failed.',
+  const onSubmit: SubmitHandler<FormSchema> = async data => {
+    const dirName = 'local'
+    const resizableItems = new Array(images.length).fill(false).map(v => ({ filePath: '', resizable: v }))
+    const promises = images
+      .filter(v => Boolean(v))
+      .map(async (item, i) => {
+        const { image } = item
+        if (!image) {
+          return null
+        }
+        const filename = `${fields[i].id}.${image.type.split('/')[1]}`
+        const filePath = `${dirName}/${filename}`
+        resizableItems[i].filePath = filePath
+        resizableItems[i].resizable = image.size > RESIZING_THRESHOLD
+        const presignedPromise = await fetch(`/api/presign?filePath=${filePath}`)
+        const presignedRes = await presignedPromise.json()
+        if (!presignedRes.authorized) {
+          toast.error('Not authorized to perform this action')
+          return null
+        }
+
+        return fetch(presignedRes.url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': image.type,
+          },
+          body: image,
+        })
+          .then(() => {
+            return true
+          })
+          .catch(() => {
+            return false
+          })
+      })
+
+    toast.promise(Promise.all(promises), {
+      loading: 'Uploading...',
+      success: () => {
+        resizeImages(resizableItems, data)
+        return 'All images successfully uploaded to s3 bucket!🎉'
+      },
+      error: () => {
+        return `Upload failed for some images 😥 Please try again`
+      },
     })
-    const imageUrl = `https://${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}.s3.amazonaws.com/${filename}`
-    mutate({ title, category, description, imageUrls: [imageUrl] })
   }
 
   if (sessionData?.user.role !== 'ADMIN') return undefined
 
   return (
     <Layout>
-      <div className="container mx-auto max-w-md py-12">
+      <div className="container mx-auto max-w-3xl py-12">
         <Toaster />
-        <h1 className="text-3xl font-medium my-5">Add a new image</h1>
+        <h1 className="text-3xl text-center font-medium my-5">Add a new image</h1>
         <form className="grid grid-cols-1 gap-y-6 shadow-lg p-8 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
           <label className="block">
             <span className="text-gray-700">Title</span>
@@ -173,26 +198,20 @@ const Uploaded = () => {
             {errors.category && <p className="text-red-500">{errors.category.message}</p>}
           </label>
           <label className="block">
-            <span className="text-gray-700">Upload a .png or .jpg image (max 1MB).</span>
             <Controller
               name="images"
-              control={control}
-              render={({ field: { ref, onBlur, onChange } }) => (
-                <input
-                  onBlur={onBlur}
-                  onChange={e => uploadPhoto(e, onChange)}
-                  ref={ref}
-                  type="file"
-                  accept="image/*"
-                />
+              render={({ field: { ...rest } }) => (
+                <FilesDropper files={images} replace={replace} fields={fields} {...rest} />
               )}
+              control={control}
             />
             {errors.images && <p className="text-red-500">{errors.images.message}</p>}
           </label>
+          <ImagePreviews files={images} remove={remove} />
           <button
-            disabled={!isValid}
+            disabled={!isValid || !isDirty}
             type="submit"
-            className={`my-4 capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
+            className={`my-4 md:w-2/12 md:mx-auto capitalize bg-blue-500 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-600 ${
               !isValid && 'opacity-50 cursor-not-allowed'
             }`}
           >
@@ -204,7 +223,6 @@ const Uploaded = () => {
   )
 }
 
-// TODO: show image preview
 export default Uploaded
 
 // this post unblocked me on providing a ref to the image input: https://github.com/orgs/react-hook-form/discussions/10091

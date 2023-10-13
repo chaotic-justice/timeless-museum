@@ -9,7 +9,7 @@ const Layout: React.FC<Props> = props => (
   <div>
     <Header />
     <div>{props.children}</div>
-    <Footer />
+    {/* <Footer /> */}
   </div>
 )
 
